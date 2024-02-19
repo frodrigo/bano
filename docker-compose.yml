@@ -1,0 +1,45 @@
+services:
+  postgres:
+    image: postgis/postgis:18-3.6-alpine
+    shm_size: 1g
+    environment:
+     - POSTGRES_DB=postgres
+     - POSTGRES_USER=postgres
+     - POSTGRES_PASSWORD=postgres
+     - POSTGRES_HOST_AUTH_METHOD=trust
+    volumes:
+      - pg_data:/var/lib/postgresql/
+    ports:
+      - "127.0.0.1:5432:5432"
+
+  tools:
+    build: .
+    volumes:
+      - .:/opt/bano
+      - bano_data:/data
+      - bano_data_output:/data/work/bano.openstreetmap.fr/www/web/data/
+    environment:
+      # Postgres
+      - POSTGRES_DB=postgres
+      - POSTGRES_USER=postgres
+      - POSTGRES_PASSWORD=postgres
+      - POSTGRES_HOST=postgres
+      - POSTGRES_PORT=5432
+      # BANO
+      - LANG=C
+      - PARALLEL_JOBS=${PARALLEL_JOBS:-4}
+
+volumes:
+  pg_data:
+  bano_data:
+    # driver: local
+    # driver_opts:
+    #   type: none
+    #   o: bind
+    #   device: ./data
+  bano_data_output:
+    driver: local
+    driver_opts:
+      type: none
+      o: bind
+      device: ./data_output

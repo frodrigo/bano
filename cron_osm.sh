@@ -2,10 +2,6 @@
 
 #set -e
 
-source /data/project/bano_v3/venv_v3/bin/activate
-
-source config
-
 lockfile=imposm.lock
 
 echo `date`

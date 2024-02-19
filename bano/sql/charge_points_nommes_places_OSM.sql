@@ -18,8 +18,8 @@ ON      pt.osm_id = admin_centre.osm_id
 LEFT OUTER JOIN (SELECT * FROM polygones_insee_a9 WHERE insee_a8 = '__code_insee__') a9
 ON      ST_Intersects(pt.way, a9.geometrie),
 UNNEST(
-    ARRAY [pt.name,pt.alt_name,pt.old_name],
-    ARRAY ['name','alt_name','old_name']
+    ARRAY [pt.name,pt.alt_name,pt.old_name,pt.name_fr,pt.name_eu,pt.name_br,pt.name_oc,pt.name_de,pt.name_ca,pt.name_gsw,pt.name_co],
+    ARRAY ['name','alt_name','old_name','name_fr','name_eu','name_br','name_oc','name_de','name_ca','name_gsw','name_co']
 ) AS name_osm(name,name_tag)
 WHERE   admin_centre.osm_id IS NULL),
 pts_hors_commune
@@ -36,8 +36,8 @@ JOIN    (SELECT * FROM planet_osm_point WHERE place != '' AND name != '' AND "re
 ON      pt.way && p.way                 AND
         NOT ST_Within(p.way,pt.way),
 UNNEST(
-        ARRAY [pt.name,pt.alt_name,pt.old_name],
-        ARRAY ['name','alt_name','old_name']
+        ARRAY [pt.name,pt.alt_name,pt.old_name,pt.name_fr,pt.name_eu,pt.name_br,pt.name_oc,pt.name_de,pt.name_ca,pt.name_gsw,pt.name_co],
+        ARRAY ['name','alt_name','old_name','name_fr','name_eu','name_br','name_oc','name_de','name_ca','name_gsw','name_co']
 ) AS name_osm(name,name_tag)
 ),
 polys

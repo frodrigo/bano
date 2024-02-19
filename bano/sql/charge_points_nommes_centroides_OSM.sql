@@ -15,8 +15,8 @@ ON      ST_Intersects(l.way, p.way)
 LEFT OUTER JOIN (SELECT * FROM polygones_insee_a9 WHERE insee_a8 = '__code_insee__') a9
 ON      ST_Intersects(l.way, a9.geometrie),
 UNNEST(
-        ARRAY [l.name,l.alt_name,l.old_name],
-        ARRAY ['name','alt_name','old_name']
+        ARRAY [l.name,l.alt_name,l.old_name,l.name_fr,l.name_eu,l.name_br,l.name_oc,l.name_de,l.name_ca,l.name_gsw,l.name_co],
+        ARRAY ['name','alt_name','old_name','name_fr','name_eu','name_br','name_oc','name_de','name_ca','name_gsw','name_co']
 ) AS name_osm(name,name_tag)
 WHERE   (l.highway != '' OR
         l.waterway = 'dam')     AND
@@ -37,8 +37,8 @@ ON      ST_Intersects(l.way, p.geometrie)
 LEFT OUTER JOIN (SELECT * FROM polygones_insee_a9 WHERE insee_a8 = '__code_insee__') a9
 ON      ST_Intersects(l.way, a9.geometrie),
 UNNEST(
-        ARRAY [l.name,l.alt_name,l.old_name],
-        ARRAY ['name','alt_name','old_name']
+        ARRAY [l.name,l.alt_name,l.old_name,l.name_fr,l.name_eu,l.name_br,l.name_oc,l.name_de,l.name_ca,l.name_gsw,l.name_co],
+        ARRAY ['name','alt_name','old_name','name_fr','name_eu','name_br','name_oc','name_de','name_ca','name_gsw','name_co']
 ) AS name_osm(name,name_tag)
 WHERE   (l.highway||"ref:FR:FANTOIR" != '' OR l.landuse = 'residential' OR l.amenity = 'parking') AND
         l.highway NOT IN ('bus_stop','platform') AND
@@ -58,8 +58,8 @@ ON      ST_Intersects(l.way, p.way)
 LEFT OUTER JOIN (SELECT * FROM polygones_insee_a9 WHERE insee_a8 = '__code_insee__') a9
 ON      ST_Intersects(l.way, a9.geometrie),
 UNNEST(
-        ARRAY [l.name,l.alt_name,l.old_name],
-        ARRAY ['name','alt_name','old_name']
+        ARRAY [l.name,l.alt_name,l.old_name,l.name_fr,l.name_eu,l.name_br,l.name_oc,l.name_de,l.name_ca,l.name_gsw,l.name_co],
+        ARRAY ['name','alt_name','old_name','name_fr','name_eu','name_br','name_oc','name_de','name_ca','name_gsw','name_co']
 ) AS name_osm(name,name_tag)
 WHERE   l.member_role = 'street' AND
         l.name != ''),

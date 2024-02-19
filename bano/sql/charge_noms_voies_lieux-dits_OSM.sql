@@ -20,8 +20,8 @@ FROM    (SELECT  1::integer AS provenance,
          ON      pt.way && p.way                 AND
                  ST_Intersects(pt.way, p.way),
          UNNEST(
-             ARRAY [pt.name,pt.alt_name,pt.old_name],
-             ARRAY ['name','alt_name','old_name']
+             ARRAY [pt.name,pt.alt_name,pt.old_name,pt.name_fr,pt.name_eu,pt.name_br,pt.name_oc,pt.name_de,pt.name_ca,pt.name_gsw,pt.name_co],
+             ARRAY ['name','alt_name','old_name','name_fr','name_eu','name_br','name_oc','name_de','name_ca','name_gsw','name_co']
          ) AS name_osm(name,name_tag)
          UNION ALL
          SELECT  2,
@@ -34,8 +34,8 @@ FROM    (SELECT  1::integer AS provenance,
          JOIN    (SELECT * FROM planet_osm_line WHERE highway != '' AND name != '')        l
          ON      p.way && l.way AND ST_Contains(p.way, l.way),
          UNNEST(
-             ARRAY [l.name,l.alt_name,l.old_name],
-             ARRAY ['name','alt_name','old_name']
+             ARRAY [l.name,l.alt_name,l.old_name,l.name_fr,l.name_eu,l.name_br,l.name_oc,l.name_de,l.name_ca,l.name_gsw,l.name_co],
+             ARRAY ['name','alt_name','old_name','name_fr','name_eu','name_br','name_oc','name_de','name_ca','name_gsw','name_co']
          ) AS name_osm(name,name_tag)
          UNION ALL
          SELECT  3,
@@ -49,8 +49,8 @@ FROM    (SELECT  1::integer AS provenance,
          ON      pl.way && p.way                 AND
                  ST_Intersects(pl.way, p.way),
          UNNEST(
-             ARRAY [pl.name,pl.alt_name,pl.old_name],
-             ARRAY ['name','alt_name','old_name']
+             ARRAY [pl.name,pl.alt_name,pl.old_name,pl.name_fr,pl.name_eu,pl.name_br,pl.name_oc,pl.name_de,pl.name_ca,pl.name_gsw,pl.name_co],
+             ARRAY ['name','alt_name','old_name','name_fr','name_eu','name_br','name_oc','name_de','name_ca','name_gsw','name_co']
          ) AS name_osm(name,name_tag)
 ) l
 LEFT OUTER JOIN suffixe h

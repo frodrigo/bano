@@ -1,0 +1,27 @@
+services:
+  postgres:
+    image: postgis/postgis:16-3.4-alpine
+    shm_size: 1g
+    environment:
+     - POSTGRES_DB=postgres
+     - POSTGRES_USER=postgres
+     - POSTGRES_PASSWORD=postgres
+     - POSTGRES_HOST_AUTH_METHOD=trust
+    ports:
+      - "127.0.0.1:5432:5432"
+
+  tools:
+    build: .
+    volumes:
+      - .:/opt/bano
+      - ./data:/data
+    environment:
+      # Postgres
+      - POSTGRES_DB=postgres
+      - POSTGRES_USER=postgres
+      - POSTGRES_PASSWORD=postgres
+      - POSTGRES_HOST=postgres
+      - POSTGRES_PORT=5432
+      # BANO
+      - LANG=C
+      - PARALLEL_JOBS=${PARALLEL_JOBS:-4}

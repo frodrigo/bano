@@ -47,6 +47,7 @@ bano setup_db
 ## Chargement des données OSM
 ### Chargement initial
 D'abord renseigner le fichier imposm.config, puis lancer :
+
 ```
 ./load_osm_france_db.sh
 ```

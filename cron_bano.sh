@@ -4,10 +4,7 @@ set -e
 
 source /data/project/bano_v3/venv_v3/bin/activate
 
-SCRIPT_DIR="$( cd "$( dirname "${BASH_SOURCE[0]}" )" && pwd )"
-cd $SCRIPT_DIR
-
-echo 'debut du cron BANO' >> $SCRIPT_DIR/cron.log
+echo 'debut du cron BANO'
 
 source config
 
@@ -22,7 +19,7 @@ bano menage_noms_ban
 bano update_bis_table
 bano charge_commune_filaire
 
-echo 'sources ok' >> $SCRIPT_DIR/cron.log
+echo 'sources ok'
 
 # Mise à jour quotidienne dans la base cadastre des couches des polygones postaux d'OSM et des statuts admin de communes en vue des exports
 bano update_table_communes
@@ -37,21 +34,21 @@ bano update_stats_departementales
 # BANO
 cat deplist.txt        | parallel -j $PARALLEL_JOBS export LANG=$LANG\; bano rapprochement --dept {1}
 
-echo 'rapprochement ok' >> $SCRIPT_DIR/cron.log
+echo 'rapprochement ok'
 
 # ménage PostgreSQL
 $pgsql_BANO -c "VACUUM bano_adresses;"
 $pgsql_BANO -c "VACUUM bano_points_nommes;"
 $pgsql_BANO -c "VACUUM nom_fantoir;"
 
-echo 'preparation export' >> $SCRIPT_DIR/cron.log
+echo 'preparation export'
 bano prepare_export
-echo 'preparation export finie' >> $SCRIPT_DIR/cron.log
+echo 'preparation export finie'
 
 # exports
-echo 'export' >> $SCRIPT_DIR/cron.log
+echo 'export'
 cat deplist.txt | parallel -j $PARALLEL_JOBS bano export {1}
-echo 'export fini' >> $SCRIPT_DIR/cron.log
+echo 'export fini'
 
 # copie+zip dans le dossier web
 cat deplist.txt | parallel -j $PARALLEL_JOBS bano publish {1}
@@ -59,4 +56,4 @@ bano publish_aggregate
 
 $pgsql_BANO -c "GRANT SELECT ON ALL TABLES IN SCHEMA PUBLIC TO PUBLIC";
 
-echo 'fin du cron BANO' >> $SCRIPT_DIR/cron.log
+echo 'fin du cron BANO'

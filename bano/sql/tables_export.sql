@@ -40,13 +40,18 @@ nom_fantoir_uniq_rank
 AS (
     SELECT
         fantoir,
-        nom,
+        (array_agg(nom ORDER BY
+            -- Pour des noms similaires, préférer la version avec diacritiques
+            regexp_count(nom, '[ÀÂÄÉÈÊËÎÏÔÖÙÛÜŸÇÆŒàâäéèêëîïôöùûüÿçæœñ]') DESC,
+            -- Pour des noms similaires, préférer la version avec minuscule
+            regexp_count(nom, '[a-zàâäéèêëîïôöùûüÿçæœñ]') DESC
+        ))[1] AS nom,
         min(rank) AS rank
     FROM
         nom_fantoir_rank
     GROUP BY
         fantoir,
-        nom
+        replace(lower(unaccent(nom)), '-', ' ')
 ),
 nom_fantoir
 AS

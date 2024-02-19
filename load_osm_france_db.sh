@@ -2,8 +2,7 @@
 
 set -e
 
-SCRIPT_DIR="$( cd "$( dirname "${BASH_SOURCE[0]}" )" && pwd )"
-source $SCRIPT_DIR/config
+source config
 
 PBF_URL=${1:-http://download.openstreetmap.fr/extracts/merge/france_metro_dom_com_nc.osm.pbf}
 PBF_FILE=$(basename "$PBF_URL")
@@ -20,10 +19,10 @@ touch ${lockfile}
 
 mkdir -p $DOWNLOAD_DIR
 cd $DOWNLOAD_DIR
-wget -NS $PBF_URL
+wget --directory-prefix=$DOWNLOAD_DIR -NS $PBF_URL
 # Récupère le state.txt
 STATE_URL=${PBF_URL/.osm.pbf/.state.txt}
-wget -NS $STATE_URL
+wget --directory-prefix=$DOWNLOAD_DIR -NS $STATE_URL
 mv `basename "${STATE_URL}"` state.txt
 
 # Configure osmosis pour les updates
@@ -35,8 +34,10 @@ sed -i -e "s|baseUrl.*|baseUrl=${REPL}|" configuration.txt
 # 5 jours
 sed -i -e "s|maxInterval.*|maxInterval=36000|" configuration.txt
 
+cd -
+
 imposm import \
-  -config $SCRIPT_DIR/imposm.config \
+  -config imposm.config \
   -read $DOWNLOAD_DIR/$PBF_FILE \
   -overwritecache \
   -cachedir $IMPOSM_CACHE_DIR \
@@ -45,7 +46,7 @@ imposm import \
   -connection postgis://$PGCON_BANO?prefix=NONE \
   -dbschema-import osm
 
-$pgsql_BANO -f $SCRIPT_DIR/sql/finalisation.sql
+$pgsql_BANO -f sql/finalisation.sql
 
 cp $DOWNLOAD_DIR/last.state.txt $DOWNLOAD_DIR/state.txt
 rm ${lockfile}

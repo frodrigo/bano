@@ -4,14 +4,11 @@
 
 source /data/project/bano_v3/venv_v3/bin/activate
 
-SCRIPT_DIR="$( cd "$( dirname "${BASH_SOURCE[0]}" )" && pwd )"
-
-cd $SCRIPT_DIR
 pip install -e .
 
-source $SCRIPT_DIR/config
+source config
 
-lockfile=${SCRIPT_DIR}/imposm.lock
+lockfile=imposm.lock
 LOGFILE=${SCRIPT_DIR}/cron.log
 
 echo `date`>> ${LOGFILE}
@@ -36,7 +33,7 @@ echo `date`" : Osmosis" >> ${LOGFILE}
 osmosis --rri workingDirectory=${DOWNLOAD_DIR} --simc --wxc ${DOWNLOAD_DIR}/changes.osc.gz
 echo `date`" : Imposm" >> ${LOGFILE}
 imposm diff \
-  -config $SCRIPT_DIR/imposm.config \
+  -config imposm.config \
   -cachedir $IMPOSM_CACHE_DIR \
   -connection postgis://$PGCON_BANO?prefix=NONE \
   -dbschema-production osm \

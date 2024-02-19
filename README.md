@@ -113,3 +113,51 @@ Compare les publications en format JSON. Avec optionnellement un JSON spécifiqu
 ```
 ./bano-diff.sh ancienne_bano/data/work/bano.openstreetmap.fr/www/web/data nouvelle_bano/data/work/bano.openstreetmap.fr/www/web/data [full.sjson.gz]
 ```
+
+## Docker
+
+Construire l'image Docker
+```
+docker compose build
+```
+
+### Configuration
+Il ne faut pas modifier le fichier de configuration pour l'exécution avec docker. Pour changer le chemin ou sont stocké les données ajuster le volume data dans `docker-compose.yaml`.
+
+```
+# Créer l'espace de travail
+mkdir -p data
+chmod a+s data
+docker compose run --rm tools ./arborescence.sh
+```
+
+### Initialisation
+```
+# Démarre Postgres et attend un peu avant de l'utiliser
+docker compose up -d postgres && sleep 5
+docker compose exec -u postgres postgres psql -c "DROP schema tiger CASCADE"
+docker compose run --rm tools bash -c "source config && ./init_base.sh"
+docker compose run --rm tools bash -c "source config && python -m bano setup_db"
+```
+
+Si besoin de se connecter sur la base de données :
+```
+docker compose exec -u postgres postgres psql
+```
+
+```
+# Charger les données OSM
+docker compose run --rm tools ./load_osm_france_db.sh https://download.openstreetmap.fr/extracts/merge/france_metro_dom_com_nc.osm.pbf
+
+# Charger les autres données
+docker compose run --rm tools bash -c "source config && python -m bano charge_topo_sas --version topo --forceload"
+docker compose run --rm tools bash -c "source config && python -m bano publish_topo"
+docker compose run --rm tools bash -c "source config && python -m bano update_bis_table"
+docker compose run --rm tools bash -c "source config && python -m bano charge_cog --forceload"
+docker compose run --rm tools bash -c "source config && python -m bano charge_cp --forceload"
+docker compose run --rm tools bash -c "source config && python -m bano charge_communes_cadastre --forceload"
+
+### Mise à jour
+docker compose run --rm tools bash -c "source config && ./cron_osm.sh"
+docker compose run --rm tools bash -c "source config && ./cron_bano.sh"
+```

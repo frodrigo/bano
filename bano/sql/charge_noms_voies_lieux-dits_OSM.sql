@@ -18,7 +18,7 @@ FROM    (SELECT  1::integer AS provenance,
                      ELSE 'place'
                  END AS nature
          FROM    (SELECT way FROM planet_osm_polygon WHERE "ref:INSEE" = '__code_insee__')                    p
-         JOIN    (SELECT * FROM planet_osm_point WHERE ("ref:FR:FANTOIR" !='' OR place != '') AND name != '') pt
+         JOIN    (SELECT * FROM planet_osm_point WHERE ("ref:FR:FANTOIR" !='' OR place != '')) pt
          ON      pt.way && p.way                 AND
                  ST_Intersects(pt.way, p.way),
          UNNEST(
@@ -34,7 +34,7 @@ FROM    (SELECT  1::integer AS provenance,
                  tags,
                  'voie'
          FROM    (SELECT way FROM planet_osm_polygon WHERE "ref:INSEE" = '__code_insee__') p
-         JOIN    (SELECT * FROM planet_osm_line WHERE highway != '' AND name != '')        l
+         JOIN    (SELECT * FROM planet_osm_line WHERE highway != '')        l
          ON      p.way && l.way AND ST_Contains(p.way, l.way),
          UNNEST(
              ARRAY [l.name,l.alt_name,l.old_name,l.name_fr,l.name_eu,l.name_br,l.name_oc,l.name_de,l.name_ca,l.name_gsw,l.name_co],
@@ -49,7 +49,7 @@ FROM    (SELECT  1::integer AS provenance,
                  tags,
                  'voie'
          FROM    (SELECT way FROM planet_osm_polygon WHERE "ref:INSEE" = '__code_insee__')                                                                    p
-         JOIN    (SELECT * FROM planet_osm_polygon WHERE (highway||"ref:FR:FANTOIR" != '' OR landuse = 'residential' OR amenity = 'parking') AND name != '') pl
+         JOIN    (SELECT * FROM planet_osm_polygon WHERE (highway||"ref:FR:FANTOIR" != '' OR landuse = 'residential' OR amenity = 'parking')) pl
          ON      pl.way && p.way                 AND
                  ST_Intersects(pl.way, p.way),
          UNNEST(
@@ -61,4 +61,4 @@ LEFT OUTER JOIN suffixe h
 ON      ST_Intersects(l.way, h.geometrie)
 LEFT OUTER JOIN (SELECT * FROM polygones_insee_a9 where insee_a8 = '__code_insee__') a9
 ON      ST_Contains(a9.geometrie,way)
-WHERE   l.name IS NOT NULL;
+WHERE   l.name != '' AND l.name IS NOT NULL;

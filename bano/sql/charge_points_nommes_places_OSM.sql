@@ -11,7 +11,7 @@ AS
         "ref:FR:FANTOIR" AS fantoir,
         a9.nom AS nom_ac
 FROM    (SELECT way FROM planet_osm_polygon WHERE "ref:INSEE" = '__code_insee__')                    p
-JOIN    (SELECT * FROM planet_osm_point WHERE place != '' AND name != '') pt
+JOIN    (SELECT * FROM planet_osm_point WHERE place != '') pt
 ON      pt.way && p.way                 AND
         ST_Intersects(pt.way, p.way)
 LEFT OUTER JOIN (SELECT osm_id FROM planet_osm_communes_statut WHERE "ref:INSEE" = '__code_insee__' AND member_role = 'admin_centre') admin_centre
@@ -108,12 +108,7 @@ SELECT ST_x(way) AS x,
         nom_ac,
         5 AS sortorder
 FROM    pts_hors_commune
-WHERE   name != ''),
-classement
-as
-(SELECT *,
-        row_number() OVER (PARTITION BY name ORDER BY sortorder,1)
-FROM    fullset)
+WHERE   name != '')
 SELECT  x,
         y,
         main_name,
@@ -122,5 +117,5 @@ SELECT  x,
         insee_ac,
         fantoir,
         nom_ac
-FROM    classement
-WHERE   row_number = 1;
+FROM    fullset
+WHERE   COALESCE(name,'') != '';

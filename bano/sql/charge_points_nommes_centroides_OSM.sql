@@ -21,8 +21,7 @@ UNNEST(
 ) AS name_osm(name,name_tag)
 WHERE   (l.highway != '' OR
         l.waterway = 'dam')     AND
-        l.highway NOT IN ('bus_stop','platform') AND
-        l.name != ''
+        l.highway NOT IN ('bus_stop','platform')
 UNION ALL
 SELECT  ST_PointOnSurface(l.way),
         l.name AS main_name,
@@ -43,8 +42,7 @@ UNNEST(
         ARRAY ['name','alt_name','old_name','name_fr','name_eu','name_br','name_oc','name_de','name_ca','name_gsw','name_co']
 ) AS name_osm(name,name_tag)
 WHERE   (l.highway||"ref:FR:FANTOIR" != '' OR l.landuse = 'residential' OR l.amenity = 'parking') AND
-        l.highway NOT IN ('bus_stop','platform') AND
-        l.name != ''
+        l.highway NOT IN ('bus_stop','platform')
 UNION ALL
 SELECT  l.way,
         l.name AS main_name,
@@ -64,8 +62,7 @@ UNNEST(
         ARRAY [l.name,l.alt_name,l.old_name,l.name_fr,l.name_eu,l.name_br,l.name_oc,l.name_de,l.name_ca,l.name_gsw,l.name_co],
         ARRAY ['name','alt_name','old_name','name_fr','name_eu','name_br','name_oc','name_de','name_ca','name_gsw','name_co']
 ) AS name_osm(name,name_tag)
-WHERE   l.member_role = 'street' AND
-        l.name != ''),
+WHERE   l.member_role = 'street'),
 lignes_noms
 AS
 (SELECT CASE

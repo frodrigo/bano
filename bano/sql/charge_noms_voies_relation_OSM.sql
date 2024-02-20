@@ -18,7 +18,7 @@ FROM    (SELECT 4::integer AS provenance,
                         osm_id,
                         way
                 FROM    planet_osm_line
-                WHERE   highway != '' AND name != '') l
+                WHERE   highway != '') l
          ON     p.way && l.way AND ST_Contains(p.way, l.way)
          JOIN   planet_osm_rels r
          ON     r.osm_id = l.osm_id,
@@ -39,7 +39,7 @@ FROM    (SELECT 4::integer AS provenance,
                         osm_id,
                         way
                 FROM    planet_osm_polygon
-                WHERE   highway != '' AND name != '') l
+                WHERE   highway != '') l
          ON     p.way && l.way AND ST_Contains(p.way, l.way)
          JOIN   planet_osm_rels r
          ON     r.osm_id = l.osm_id,

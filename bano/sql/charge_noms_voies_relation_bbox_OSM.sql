@@ -5,9 +5,11 @@ SELECT  DISTINCT provenance,
         libelle_suffixe,
         a9.code_insee,
         a9.nom,
-        'voie'::text
+        'voie'::text,
+        osm_id
 FROM (  SELECT  6::integer AS provenance,
                 l.way,
+                l.osm_id,
                 l.name,
                 r.tags
         FROM    (SELECT way FROM planet_osm_polygon WHERE "ref:INSEE" = '__code_insee__')   p
@@ -18,6 +20,7 @@ FROM (  SELECT  6::integer AS provenance,
         UNION ALL
         SELECT  7,
                 l.way,
+                l.osm_id,
                 l.name,
                 r.tags
         FROM    (SELECT way FROM planet_osm_polygon WHERE "ref:INSEE" = '__code_insee__')   p

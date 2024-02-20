@@ -22,6 +22,7 @@ class Nom:
         code_insee,
         code_insee_ancienne_commune,
         nom_ancienne_commune,
+        osm_id,
     ):
         self.code_insee = code_insee
         self.code_dept = hp.get_code_dept_from_insee(code_insee)
@@ -38,6 +39,7 @@ class Nom:
             if self.code_insee_ancienne_commune
             else "RACINE"
         )
+        self.osm_id = osm_id
 
     def __eq__(self, other):
         return (
@@ -47,6 +49,7 @@ class Nom:
             and self.source == other.source
             and self.code_insee == other.code_insee
             and self.code_insee_ancienne_commune == other.code_insee_ancienne_commune
+            and self.osm_id == other.osm_id
         )
 
     def __hash__(self):
@@ -58,6 +61,7 @@ class Nom:
                 self.nature,
                 self.code_insee,
                 self.code_insee_ancienne_commune,
+                self.osm_id,
             )
         )
 
@@ -112,6 +116,7 @@ class Noms:
             code_insee_ancienne_commune,
             nom_ancienne_commune,
             nature,
+            osm_id,
         ) in data:
             if provenance in (1, 2, 3, 4, 5):
                 self.add_nom(
@@ -124,6 +129,7 @@ class Noms:
                         self.code_insee,
                         code_insee_ancienne_commune,
                         nom_ancienne_commune,
+                        osm_id,
                     )
                 )
             if provenance in (6, 7) and tags.get("ref:FR:FANTOIR"):
@@ -137,6 +143,7 @@ class Noms:
                         self.code_insee,
                         code_insee_ancienne_commune,
                         nom_ancienne_commune,
+                        osm_id,
                     )
                 )
 
@@ -170,6 +177,14 @@ class Noms:
                 else:
                     if not t.nom in self.fantoir_par_nom_sous_commune:
                         self.fantoir_par_nom_sous_commune[t.nom] = t.fantoir
+
+        osm_id_par_fantoir = {}
+        for t in self.triplets_nom_fantoir_source:
+            if t.source == 'OSM' and t.osm_id and t.fantoir:
+                osm_id_par_fantoir[t.osm_id] = t.fantoir
+        for t in self.triplets_nom_fantoir_source:
+            if t.source == 'OSM' and not t.fantoir:
+                t.fantoir = osm_id_par_fantoir.get(t.osm_id)
 
     def enregistre(self, correspondance):
         sql_process(
@@ -457,6 +472,7 @@ class Adresses:
                         self.code_insee,
                         a.code_insee_ancienne_commune,
                         a.nom_ancienne_commune,
+                        None,
                     )
                 )
             if a.place:
@@ -470,6 +486,7 @@ class Adresses:
                         self.code_insee,
                         a.code_insee_ancienne_commune,
                         a.nom_ancienne_commune,
+                        None,
                     )
                 )
 
@@ -730,6 +747,7 @@ class Points_nommes:
                         self.code_insee,
                         a.code_insee_ancienne_commune,
                         a.nom_ancienne_commune,
+                        None,
                     )
                 )
             if a.source == "OSM":
@@ -743,6 +761,7 @@ class Points_nommes:
                         self.code_insee,
                         a.code_insee_ancienne_commune,
                         a.nom_ancienne_commune,
+                        None,
                     )
                 )
 

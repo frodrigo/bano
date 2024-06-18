@@ -44,7 +44,7 @@ imposm import \
   -diff \
   -write \
   -connection postgis://$PGCON_BANO?prefix=NONE \
-  -dbschema-import osm
+  -dbschema-import public
 
 $pgsql_BANO -f sql/finalisation.sql
 

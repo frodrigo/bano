@@ -29,7 +29,7 @@ imposm diff \
   -config imposm.config \
   -cachedir $IMPOSM_CACHE_DIR \
   -connection postgis://$PGCON_BANO?prefix=NONE \
-  -dbschema-production osm \
+  -dbschema-production public \
   ${DOWNLOAD_DIR}/changes.osc.gz
 echo `date`" : Osm2pgsql"
 osm2pgsql -a -S osm2pgsql.style -s -l -d bano -U cadastre -p osm2pgsql $DOWNLOAD_DIR/changes.osc.gz

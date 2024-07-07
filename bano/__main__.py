@@ -270,14 +270,14 @@ def main():
 
     args = parser.parse_args()
 
-    try:
-        args.func(**vars(args))
-    except ValueError as err:
-        sys.exit(str(err))
-    except TypeError as err:
-        import ipdb
+    # try:
+    args.func(**vars(args))
+    # except ValueError as err:
+    #     sys.exit(str(err))
+    # except TypeError as err:
+    #     import ipdb
 
-        ipdb.set_trace()
+    #     ipdb.set_trace()
 
 
 if __name__ == "__main__":

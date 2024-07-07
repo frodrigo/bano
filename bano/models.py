@@ -15,6 +15,7 @@ class Nom:
     def __init__(
         self,
         nom,
+        nom_tag,
         fantoir,
         nature,
         source,
@@ -26,6 +27,7 @@ class Nom:
         self.code_dept = hp.get_code_dept_from_insee(code_insee)
         self.code_insee_ancienne_commune = code_insee_ancienne_commune
         self.nom = nom.replace("\t", " ")
+        self.nom_tag = nom_tag
         self.nom_ancienne_commune = nom_ancienne_commune
         self.fantoir = fantoir[0:9] if fantoir else None
         self.nature = nature
@@ -64,7 +66,7 @@ class Nom:
             fantoir = remplace_fantoir_ban(correspondance, self.niveau, self.fantoir)
         else:
             fantoir = self.fantoir
-        return f"{fantoir}\t{self.nom}\t{self.nature}\t{self.code_insee}\t{self.code_dept}\t{self.code_insee_ancienne_commune if self.code_insee_ancienne_commune else ''}\t{self.nom_ancienne_commune if self.nom_ancienne_commune else ''}\t{self.source}"
+        return f"{fantoir}\t{self.nom}\t{self.nom_tag}\t{self.nature}\t{self.code_insee}\t{self.code_dept}\t{self.code_insee_ancienne_commune if self.code_insee_ancienne_commune else ''}\t{self.nom_ancienne_commune if self.nom_ancienne_commune else ''}\t{self.source}"
 
     def add_fantoir(self, topo):
         if not self.fantoir:
@@ -104,6 +106,7 @@ class Noms:
         for (
             provenance,
             name,
+            name_tag,
             tags,
             libelle_suffixe,
             code_insee_ancienne_commune,
@@ -114,6 +117,7 @@ class Noms:
                 self.add_nom(
                     Nom(
                         name,
+                        name_tag,
                         tags.get("ref:FR:FANTOIR"),
                         nature,
                         "OSM",
@@ -126,6 +130,7 @@ class Noms:
                 self.add_nom(
                     Nom(
                         name,
+                        name_tag,
                         tags["ref:FR:FANTOIR"],
                         nature,
                         "OSM",
@@ -199,6 +204,7 @@ class Noms:
                 columns=(
                     "fantoir",
                     "nom",
+                    "nom_tag",
                     "nature",
                     "code_insee",
                     "code_dept",
@@ -462,6 +468,7 @@ class Adresses:
                 noms.add_nom(
                     Nom(
                         a.voie,
+                        None,
                         a.fantoir,
                         "voie",
                         a.source,
@@ -474,6 +481,7 @@ class Adresses:
                 noms.add_nom(
                     Nom(
                         a.place,
+                        None,
                         a.fantoir,
                         "place",
                         a.source,
@@ -556,6 +564,7 @@ class Point_nomme:
         lon,
         lat,
         nom,
+        nom_tag,
         fantoir=None,
         code_insee_ancienne_commune=None,
         nom_ancienne_commune=None,
@@ -567,6 +576,7 @@ class Point_nomme:
         self.lat = round(lat, 6)
         self.nature = nature
         self.nom = nom.replace("\t", " ")
+        self.nom_tag = nom_tag
         self.nom_normalise = hp.normalize(nom)
         self.fantoir = fantoir[0:9] if fantoir else None
         self.code_insee_ancienne_commune = code_insee_ancienne_commune
@@ -627,6 +637,7 @@ class Points_nommes:
                     x,
                     y,
                     hp.format_toponyme(nom),
+                    None,
                     code_insee_ancienne_commune=code_insee_ancienne_commune,
                     nom_ancienne_commune=nom_ancienne_commune,
                 )
@@ -641,6 +652,7 @@ class Points_nommes:
             x,
             y,
             nom,
+            nom_tag,
             code_insee_ancienne_commune,
             fantoir,
             nom_ancienne_commune,
@@ -658,11 +670,12 @@ class Points_nommes:
                         x,
                         y,
                         nom,
+                        nom_tag,
                         code_insee_ancienne_commune=code_insee_ancienne_commune,
                         fantoir=single_fantoir,
                         nom_ancienne_commune=nom_ancienne_commune,
                     )
-            )
+                )
 
     def charge_points_nommes_place_osm(self):
         data = sql_get_data(
@@ -673,6 +686,7 @@ class Points_nommes:
             x,
             y,
             nom,
+            nom_tag,
             code_insee_ancienne_commune,
             fantoir,
             nom_ancienne_commune,
@@ -688,11 +702,12 @@ class Points_nommes:
                         x,
                         y,
                         nom,
+                        nom_tag,
                         code_insee_ancienne_commune=code_insee_ancienne_commune,
                         fantoir=single_fantoir,
                         nom_ancienne_commune=nom_ancienne_commune,
                     )
-            )
+                )
 
     def charge_points_nommes_numeros_ban(self):
         data = sql_get_data(
@@ -715,6 +730,7 @@ class Points_nommes:
                     x,
                     y,
                     nom,
+                    None,
                     code_insee_ancienne_commune=code_insee_ancienne_commune,
                     fantoir=fantoir,
                     nom_ancienne_commune=nom_ancienne_commune,
@@ -730,6 +746,7 @@ class Points_nommes:
                 noms.add_nom(
                     Nom(
                         a.nom,
+                        None,
                         a.fantoir,
                         a.nature,
                         a.source,
@@ -742,6 +759,7 @@ class Points_nommes:
                 noms.add_nom(
                     Nom(
                         a.nom,
+                        a.nom_tag,
                         a.fantoir,
                         a.nature,
                         a.source,

@@ -37,5 +37,6 @@ def batch_stop_log(id_batch, status):
             status=str(status),
         ),
     )
-    if not status:
-        print(f"Erreur pendant le processus {id_batch}")
+    # raise Exception("Batch stop")
+    # if not status:
+    #     print(f"Erreur pendant le processus {id_batch}")

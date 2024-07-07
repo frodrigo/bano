@@ -58,12 +58,12 @@ def import_to_pg(csv,table):
     with open(csv) as f:
         f.readline()
         with bano_db.cursor() as cur_insert:
-            try:
+            # try:
                 cur_insert.execute(f"TRUNCATE {table}")
                 cur_insert.copy_expert(f"COPY {table} FROM STDIN WITH CSV HEADER DELIMITER ';'",f)
                 b.batch_stop_log(id_batch, True)
-            except psycopg2.DataError as e:
-                b.batch_stop_log(id_batch, False)
+            # except psycopg2.DataError as e:
+            #     b.batch_stop_log(id_batch, False)
 
 def get_destination(fichier):
     try:

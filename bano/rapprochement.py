@@ -111,9 +111,10 @@ def process_unitaire(code_insee,verbose,source_pifometre):
 
         b.batch_stop_log(id_batch, True)
     except Exception as e:
-        if verbose:
-            print(e)
-        b.batch_stop_log(id_batch, False)
+        raise e
+        # if verbose:
+        #     print(e)
+        # b.batch_stop_log(id_batch, False)
     if source_pifometre:
         release_lock(code_insee)
 

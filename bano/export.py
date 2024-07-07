@@ -24,8 +24,9 @@ def save_as_csv(dept,csv_data):
             writer = csv.writer(csvfile,dialect='unix',quoting=csv.QUOTE_MINIMAL)
             writer.writerows([l[0:-1] for l in csv_data])
         b.batch_stop_log(id_batch, True)
-    except:
-        b.batch_stop_log(id_batch, False)
+    except Exception as e:
+        raise e
+        # b.batch_stop_log(id_batch, False)
 
 def save_as_ttl(dept,csv_data):
     id_batch = b.batch_start_log("export TTL", "", dept)
@@ -73,8 +74,9 @@ locn:geometry [a geo:Point ; geo:lat "{lat}" ; geo:long "{lon}" ] ;
 locn:geometry [a gsp:Geometry; gsp:asWKT "POINT({lon} {lat})"^^gsp:wktLiteral ] ;
 .""")
         b.batch_stop_log(id_batch, True)
-    except:
-        b.batch_stop_log(id_batch, False)
+    except Exception as e:
+        raise e
+        # b.batch_stop_log(id_batch, False)
 
 
 def save_as_shp(dept):
@@ -82,8 +84,9 @@ def save_as_shp(dept):
     try:
         subprocess.run(['ogr2ogr', '-f',"ESRI Shapefile", '-lco', 'ENCODING=UTF-8', '-s_srs', 'EPSG:4326', '-t_srs', 'EPSG:4326', '-overwrite', get_sas_full_filename(dept,'shp'), 'PG:' + os.environ['PG_BANO'], '-sql', sql_query('export_csv_dept',dict(dept=dept))])
         b.batch_stop_log(id_batch, True)
-    except:
-        b.batch_stop_log(id_batch, False)
+    except Exception as e:
+        raise e
+        # b.batch_stop_log(id_batch, False)
 
 def save_as_json(dept):
     id_batch = b.batch_start_log("export JSON", "", dept)
@@ -108,8 +111,8 @@ def save_as_json(dept):
                 jsonfile.write(f"{json.dumps(l,ensure_ascii=False,separators=(',',':'))}\n")
         b.batch_stop_log(id_batch, True)
     except Exception as e:
-        # print(p,l,e)
-        b.batch_stop_log(id_batch, False)
+        raise e
+        # b.batch_stop_log(id_batch, False)
 
 def get_target_filename(dept,filetype):
     return f'bano-{dept}.{filetype}'
@@ -126,8 +129,9 @@ def prepare_export(**kwargs):
         sql_process('table_polygones_postaux',dict())
         sql_process('tables_export',dict())
         b.batch_stop_log(id_batch, True)
-    except:
-        b.batch_stop_log(id_batch, False)
+    except Exception as e:
+        raise e
+        # b.batch_stop_log(id_batch, False)
 
 def process(departements, **kwargs):
     for dept in departements:

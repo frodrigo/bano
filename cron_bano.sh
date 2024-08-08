@@ -10,8 +10,6 @@ source config
 
 ./arborescence.sh
 
-pip install -e .
-
 # Sources
 cat deplist.txt | parallel -j $PARALLEL_JOBS export LANG=$LANG\; bano charge_ban {1}
 cat deplist.txt | parallel -j $PARALLEL_JOBS export LANG=$LANG\; bano charge_ld_cadastre {1}

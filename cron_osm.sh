@@ -4,8 +4,6 @@
 
 source /data/project/bano_v3/venv_v3/bin/activate
 
-pip install -e .
-
 source config
 
 lockfile=imposm.lock

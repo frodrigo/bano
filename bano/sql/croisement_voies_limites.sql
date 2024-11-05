@@ -4,53 +4,43 @@ SELECT way AS geometrie,
        "ref:INSEE" AS code_insee,
        admin_level,
        name AS nom_com
-FROM   planet_osm_polygon
+FROM   osm2pgsql_polygon
 WHERE  boundary='administrative' AND
-       admin_level = 8 AND
+       admin_level = '8' AND
        "ref:INSEE" LIKE '__dept__%' AND
-       name != '';
+       name IS NOT NULL;
 CREATE INDEX gidx_poladmin ON poladmin USING GIST(geometrie);
 
 CREATE TEMP TABLE highway_name
 as
-SELECT id,
+SELECT uniqid,
        osm_id,
        way,
        ST_StartPoint(way) way_from,
        ST_EndPoint(way) way_to,
        name AS nom
-FROM   (SELECT id,
+FROM   (SELECT uniqid,
                osm_id,
                way,
                name
-       FROM    planet_osm_line
-       WHERE   name != '' AND
-               highway != '') l
+       FROM    osm2pgsql_line
+       WHERE   name IS NOT NULL AND
+               highway IS NOT NULL) l
 JOIN poladmin
 ON   way && geometrie;
 
 CREATE INDEX gidx_highway_name_from ON highway_name USING GIST(way_from);
 CREATE INDEX gidx_highway_name_to ON highway_name USING GIST(way_to);
 
-CREATE TEMP TABLE previous_ids
-AS
-WITH
-del
-AS
-(DELETE FROM croisement_voies_limites
-WHERE code_dept = '__dept__'
-RETURNING id,export_pbf)
-SELECT id,export_pbf
-FROM   del;
-
--- DELETE FROM croisement_voies_limites
--- WHERE code_dept = '__dept__';
+DELETE
+FROM   croisement_voies_limites
+WHERE  code_dept = '__dept__';
 
 INSERT INTO croisement_voies_limites
 WITH
 sub
 AS
-(SELECT DISTINCT id,
+(SELECT DISTINCT uniqid,
                  osm_id,
                  way,
                  nom,
@@ -67,7 +57,7 @@ ON    n.way_to && pt.geometrie AND
       ST_Contains(pt.geometrie,way_to)
 WHERE pf.code_insee != pt.code_insee)
 SELECT DISTINCT '__dept__',
-                id,
+                uniqid,
                 osm_id,
                 way,
                 sub.nom,
@@ -76,11 +66,8 @@ SELECT DISTINCT '__dept__',
                 COALESCE(nff.rapproche,False),
                 nom_commune_fin,
                 code_insee_fin,
-                COALESCE(nft.rapproche,False),
-                COALESCE(p.export,False)
+                COALESCE(nft.rapproche,False)
 FROM sub
-LEFT JOIN (SELECT true AS export, id FROM previous_ids WHERE export_pbf) p
-USING (id)
 LEFT JOIN (SELECT code_insee AS code_insee_debut,nom,True AS rapproche FROM nom_fantoir WHERE code_insee LIKE '__dept__%' AND source = 'OSM') as nff
 USING (code_insee_debut,nom)
 LEFT JOIN (SELECT code_insee,nom,True AS rapproche FROM nom_fantoir WHERE code_insee LIKE '__dept__%' AND source = 'OSM') as nft

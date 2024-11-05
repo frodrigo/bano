@@ -1,0 +1,1 @@
+ALTER tABLE osm2pgsql_line ADD COLUMN uniqid serial;

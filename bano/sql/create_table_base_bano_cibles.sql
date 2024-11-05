@@ -149,7 +149,6 @@ CREATE TABLE IF NOT EXISTS croisement_voies_limites (
     nom_commune_fin text,
     code_insee_fin character(5),
     rapproche_fin boolean,
-    export_pbf boolean DEFAULT false,
     point_debut_3857 geometry (Point, 3857) GENERATED ALWAYS AS (ST_Transform(ST_StartPoint(geometrie_osm),3857)) STORED,
     point_fin_3857 geometry (Point, 3857) GENERATED ALWAYS AS (ST_Transform(ST_EndPoint(geometrie_osm),3857)) STORED,
     geometrie_osm_3857 geometry (LineString, 3857) GENERATED ALWAYS AS (ST_Transform(geometrie_osm,3857)) STORED);

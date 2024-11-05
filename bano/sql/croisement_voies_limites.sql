@@ -24,7 +24,8 @@ FROM   (SELECT uniqid,
                way,
                name
        FROM    osm2pgsql_line
-       WHERE   name IS NOT NULL AND
+       WHERE   osm_id > 0 AND
+               name IS NOT NULL AND
                highway IS NOT NULL) l
 JOIN poladmin
 ON   way && geometrie;

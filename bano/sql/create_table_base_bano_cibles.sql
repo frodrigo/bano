@@ -166,6 +166,7 @@ CREATE TABLE IF NOT EXISTS point_croisement_voies_limites (
     code_insee_debut character(5),
     code_insee_fin character(5),
     degres integer,
+    petit_chevauchement boolean DEFAULT false,
     geometrie_3857 geometry (Point, 3857) GENERATED ALWAYS AS (ST_Transform(geometrie,3857)) STORED);
 
 CREATE INDEX IF NOT EXISTS idx_point_croisement_voies_limites_code_dept ON point_croisement_voies_limites(code_dept);

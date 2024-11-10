@@ -9,7 +9,6 @@ WHERE  boundary='administrative' AND
        admin_level = '8' AND
        "ref:INSEE" LIKE '__dept__%' AND
        name IS NOT NULL;
-CREATE INDEX gidx_poladmin ON poladmin USING GIST(geometrie);
 
 CREATE TEMP TABLE highway_name
 as
@@ -32,6 +31,8 @@ ON   way && geometrie;
 
 CREATE INDEX gidx_highway_name_from ON highway_name USING GIST(way_from);
 CREATE INDEX gidx_highway_name_to ON highway_name USING GIST(way_to);
+
+CREATE INDEX gidx_poladmin ON poladmin USING GIST(geometrie);
 
 DELETE
 FROM   croisement_voies_limites

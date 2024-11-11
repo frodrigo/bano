@@ -157,6 +157,8 @@ CREATE TABLE IF NOT EXISTS croisement_voies_limites (
 CREATE INDEX IF NOT EXISTS idx_croisement_voies_limites_code_dept ON croisement_voies_limites(code_dept);
 CREATE INDEX IF NOT EXISTS gidx_croisement_voies_limites ON croisement_voies_limites USING GIST(geometrie_osm);
 CREATE INDEX IF NOT EXISTS gidx_croisement_voies_limites_3857 ON croisement_voies_limites USING GIST(geometrie_osm_3857);
+CREATE INDEX IF NOT EXISTS gidx_croisement_voies_limites_point_debut_3857 ON croisement_voies_limites USING GIST(point_debut_3857);
+CREATE INDEX IF NOT EXISTS gidx_croisement_voies_limites_point_fin_3857 ON croisement_voies_limites USING GIST(point_fin_3857);
 
 CREATE TABLE IF NOT EXISTS point_croisement_voies_limites (
     code_dept character varying(3),

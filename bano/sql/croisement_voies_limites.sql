@@ -10,6 +10,30 @@ WHERE  boundary='administrative' AND
        "ref:INSEE" LIKE '__dept__%' AND
        name IS NOT NULL;
 
+-- communes limitrophes
+INSERT INTO poladmin
+WITH
+d
+AS
+(SELECT way
+FROM    osm2pgsql_polygon
+WHERE   boundary='administrative' AND
+        admin_level = '6' AND
+        "ref:INSEE" like '__dept__%' AND
+        name IS NOT NULL)
+SELECT  p.way,
+        "ref:INSEE",
+        admin_level,
+        name
+FROM    osm2pgsql_polygon p
+JOIN    d
+ON      p.way && d.way
+WHERE   ST_Touches(d.way,p.way) AND
+        boundary='administrative' AND
+        admin_level = '8' AND
+        "ref:INSEE" NOT LIKE '__dept__%' AND
+        name IS NOT NULL;
+
 CREATE TEMP TABLE highway_name
 as
 SELECT uniqid,
@@ -36,7 +60,18 @@ CREATE INDEX gidx_poladmin ON poladmin USING GIST(geometrie);
 
 DELETE
 FROM   croisement_voies_limites
-WHERE  code_dept = '__dept__';
+WHERE  code_insee_debut LIKE '__dept__%' OR code_insee_fin LIKE '__dept__%';
+
+CREATE TEMP TABLE nom_fantoir_tmp
+AS
+SELECT n.code_insee,
+       n.nom,true::boolean AS rapproche
+FROM   nom_fantoir n
+JOIN   (SELECT DISTINCT code_insee
+       FROM poladmin) a
+USING  (code_insee)
+WHERE  source = 'OSM';
+CREATE INDEX idx_nom_fantoir_tmp ON nom_fantoir_tmp(code_insee,nom);
 
 INSERT INTO croisement_voies_limites
 WITH
@@ -69,12 +104,13 @@ SELECT DISTINCT '__dept__',
                 nom_commune_fin,
                 code_insee_fin,
                 COALESCE(nft.rapproche,False)
-FROM sub
-LEFT JOIN (SELECT code_insee AS code_insee_debut,nom,True AS rapproche FROM nom_fantoir WHERE code_insee LIKE '__dept__%' AND source = 'OSM') as nff
-USING (code_insee_debut,nom)
-LEFT JOIN (SELECT code_insee,nom,True AS rapproche FROM nom_fantoir WHERE code_insee LIKE '__dept__%' AND source = 'OSM') as nft
-ON    code_insee_fin = nft.code_insee AND
-      sub.nom = nft.nom;
+FROM   sub
+LEFT OUTER JOIN nom_fantoir_tmp AS nff
+ON     code_insee_fin = nff.code_insee AND
+       sub.nom = nff.nom
+LEFT OUTER JOIN nom_fantoir_tmp AS nft
+ON     code_insee_fin = nft.code_insee AND
+       sub.nom = nft.nom;
 
 CREATE TEMP TABLE pol_line
 AS
@@ -87,7 +123,7 @@ GROUP BY 1;
 CREATE INDEX gidx_pol ON pol_line USING GIST (erings);
 
 DELETE FROM point_croisement_voies_limites
-WHERE code_dept = '__dept__';
+WHERE  code_insee_debut LIKE '__dept__%' OR code_insee_fin LIKE '__dept__%';
 
 INSERT INTO point_croisement_voies_limites
 WITH

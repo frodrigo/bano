@@ -155,6 +155,7 @@ CREATE TABLE IF NOT EXISTS croisement_voies_limites (
     geometrie_osm_3857 geometry (LineString, 3857) GENERATED ALWAYS AS (ST_Transform(geometrie_osm,3857)) STORED);
 
 CREATE INDEX IF NOT EXISTS idx_croisement_voies_limites_id ON croisement_voies_limites(id);
+CREATE INDEX IF NOT EXISTS idx_croisement_voies_limites_osm_id ON croisement_voies_limites(osm_id);
 CREATE INDEX IF NOT EXISTS idx_croisement_voies_limites_code_dept ON croisement_voies_limites(code_dept);
 CREATE INDEX IF NOT EXISTS gidx_croisement_voies_limites ON croisement_voies_limites USING GIST(geometrie_osm);
 CREATE INDEX IF NOT EXISTS gidx_croisement_voies_limites_3857 ON croisement_voies_limites USING GIST(geometrie_osm_3857);

@@ -93,7 +93,7 @@ JOIN  poladmin AS pt
 ON    n.way_to && pt.geometrie AND
       ST_Contains(pt.geometrie,way_to)
 WHERE pf.code_insee != pt.code_insee AND 
-      pf.code_insee LIKE '__dept__%' OR pt.code_insee LIKE '__dept__%')
+      (pf.code_insee LIKE '__dept__%' OR pt.code_insee LIKE '__dept__%'))
 SELECT DISTINCT '__dept__',
                 uniqid,
                 osm_id,

@@ -107,7 +107,7 @@ SELECT DISTINCT '__dept__',
                 COALESCE(nft.rapproche,False)
 FROM   sub
 LEFT OUTER JOIN nom_fantoir_tmp AS nff
-ON     code_insee_fin = nff.code_insee AND
+ON     code_insee_debut = nff.code_insee AND
        sub.nom = nff.nom
 LEFT OUTER JOIN nom_fantoir_tmp AS nft
 ON     code_insee_fin = nft.code_insee AND

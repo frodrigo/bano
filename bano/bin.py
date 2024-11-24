@@ -102,6 +102,11 @@ def main():
         help="Met à jour les stats de BAL",
         description="Met à jour les stats de BAL",
     )
+    subparser.add_argument(
+        "--forceload", "-f",
+        action='store_true',
+        help="Forcer le re-chargement en base même sans téléchargement"
+    )
     subparser.set_defaults(func=datagouv_cs.process)
 
     subparser = subparsers.add_parser(

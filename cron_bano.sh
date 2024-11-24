@@ -26,6 +26,9 @@ echo 'sources ok' >> $SCRIPT_DIR/cron.log
 bano update_table_communes
 bano update_infos_communes
 
+#Stats BAL
+bano download_commune_summary
+
 # $pgsql_BANO -f sql/create_table_polygones_postaux.sql
 # $pgsql_CADASTRE -f sql/post_copie_ban.sql
 echo 'màj polygones ok' >> $SCRIPT_DIR/cron.log

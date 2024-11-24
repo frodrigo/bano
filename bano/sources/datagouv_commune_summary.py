@@ -35,7 +35,7 @@ def update_table_in_db():
             cur.copy_from(csv,'communes_summary',sep=',',null='')
 
 def get_destination():
-    return Path(os.environ['BAN_CACHE_DIR']) / 'communes-summary.csv'
+    return Path(os.environ['DATA_DIR']) / 'communes-summary.csv'
 
 def process(forceload, **kwargs):
     if dowload() or forceload:

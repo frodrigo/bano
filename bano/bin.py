@@ -122,6 +122,12 @@ def main():
     subparser.set_defaults(func=boite_a_outils.maj_table_communes)
 
     subparser = subparsers.add_parser(
+        "update_stats_departementales",
+        help="Met à jour les stats departementales BAN/BANO/TOPO",
+    )
+    subparser.set_defaults(func=boite_a_outils.update_stats_departementales)
+
+    subparser = subparsers.add_parser(
         "pre_process_suffixe",
         help="Détermine les zones où les noms dans le Cadastre sont suffixés",
     )

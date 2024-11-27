@@ -21,3 +21,11 @@ def update_infos_communes(**kwargs):
         b.batch_stop_log(batch_id, True)
     except:
         b.batch_stop_log(batch_id, False)
+
+def update_stats_departementales(**kwargs):
+    batch_id = b.batch_start_log("maj_stats_departementales", "France", "France")
+    try:
+        sql_process("stats_departementales", dict())
+        b.batch_stop_log(batch_id, True)
+    except:
+        b.batch_stop_log(batch_id, False)

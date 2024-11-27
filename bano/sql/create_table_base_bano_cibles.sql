@@ -121,6 +121,28 @@ CREATE TABLE IF NOT EXISTS bano_stats_communales_cumul(
 
 CREATE INDEX IF NOT EXISTS idx_bano_stats_communales_cumul_code_insee ON bano_stats_communales_cumul (code_insee);
 
+CREATE TABLE IF NOT EXISTS bano_stats_departementales(
+    dep character varying(3),
+    nb_communes integer,
+    nb_adresses_osm integer,
+    nb_adresses_ban integer,
+    nb_voies_ban integer,
+    nb_voies_ban_rapprochees integer,
+    nb_bal integer,
+    nb_bal_100pct_certif integer,
+    maj timestamp DEFAULT now());
+
+CREATE TABLE IF NOT EXISTS bano_stats_departementales_cumul(
+    dep character varying(3),
+    nb_communes integer,
+    nb_adresses_osm integer,
+    nb_adresses_ban integer,
+    nb_voies_ban integer,
+    nb_voies_ban_rapprochees integer,
+    nb_bal integer,
+    nb_bal_100pct_certif integer,
+    maj timestamp);
+
 CREATE TABLE IF NOT EXISTS infos_communes (
     dep character varying(3),
     code_insee character(5),

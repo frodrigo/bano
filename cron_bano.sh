@@ -29,9 +29,8 @@ bano update_infos_communes
 #Stats BAL
 bano download_commune_summary
 
-# $pgsql_BANO -f sql/create_table_polygones_postaux.sql
-# $pgsql_CADASTRE -f sql/post_copie_ban.sql
-echo 'màj polygones ok' >> $SCRIPT_DIR/cron.log
+# Stats departementales BANO/BAN/TOPO
+bano update_stats_departementales
 
 # BANO
 cat deplist.txt        | parallel -j $PARALLEL_JOBS export LANG=$LANG\; bano rapprochement --dept {1}
@@ -56,8 +55,5 @@ $pgsql_BANO -c "VACUUM bano_adresses;"
 $pgsql_BANO -c "VACUUM bano_points_nommes;"
 $pgsql_BANO -c "VACUUM nom_fantoir;"
 $pgsql_BANO -c "GRANT SELECT ON ALL TABLES IN SCHEMA PUBLIC TO PUBLIC";
-
-# Pifometre - croiement voies & limites admin
-cat deplist.txt | parallel -j $PARALLEL_JOBS export LANG=$LANG\; bano croisement_voies_limites {1}
 
 echo 'fin du cron BANO' >> $SCRIPT_DIR/cron.log

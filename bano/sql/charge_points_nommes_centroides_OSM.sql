@@ -57,7 +57,7 @@ AS
         END AS way_line,
         *
 FROM    lignes_brutes
-WHERE   name IS NOT NULL AND
+WHERE   COALESCE(name,'') != '' AND
         (fantoir LIKE '__code_insee__%' OR fantoir = '')),
 lignes_noms_rang
 AS

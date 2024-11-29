@@ -40,4 +40,4 @@ LEFT OUTER JOIN suffixe h
 ON      ST_Intersects(l.way, h.geometrie)
 LEFT OUTER JOIN (SELECT * FROM polygones_insee_a9 where insee_a8 = '__code_insee__') a9
 ON      ST_Contains(a9.geometrie,way)
-WHERE   l.name IS NOT NULL;
+WHERE   COALESCE(l.name,'') != '';

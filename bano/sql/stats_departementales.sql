@@ -43,7 +43,7 @@ GROUP BY 1),
 nb_voies_ban_rapprochees
 AS
 (SELECT dep, count(*) AS nb_voies_ban_rapprochees
-FROM (SELECT code_dept AS dep, fantoir FROM bano_adresses WHERE source = 'OSM'
+FROM (SELECT code_dept AS dep, fantoir FROM nom_fantoir WHERE source = 'OSM'
      INTERSECT
 	 SELECT code_dept, fantoir FROM bano_adresses WHERE source = 'BAN')a
 GROUP BY 1),

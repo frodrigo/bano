@@ -28,8 +28,11 @@ def main():
     subparser.set_defaults(func=setup_db.setup_bano)
 
     subparser = subparsers.add_parser(
-        "charge_topo",
+        "charge_topo_sas",
         help="Charge une version du fichier TOPO",
+    )
+    subparser.add_argument(
+        "--version", type=str, help="Version de TOPO pour nommage du fichier téléchargé"
     )
     subparser.add_argument(
         "--forceload", "-f",
@@ -37,6 +40,12 @@ def main():
         help="Forcer le re-chargement en base même sans téléchargement"
     )
     subparser.set_defaults(func=datagouv_topo.process)
+
+    subparser = subparsers.add_parser(
+        "publish_topo",
+        help="Bascule la version de TOPO au profit de celle dans le sas",
+    )
+    subparser.set_defaults(func=datagouv_topo.publish)
 
     subparser = subparsers.add_parser(
         "charge_cog",

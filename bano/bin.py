@@ -11,7 +11,7 @@ from . import boite_a_outils
 from . import export
 from . import publish
 from . import pifometre
-from .sources import ban, cog, cadastre_ld, ban2topo, datagouv_commune_summary as datagouv_cs,datagouv_cp,datagouv_cp,datagouv_topo
+from .sources import ban, cog, cadastre_ld, cadastre_communes, ban2topo, datagouv_commune_summary as datagouv_cs,datagouv_cp,datagouv_cp,datagouv_topo
 from .constants import DEPARTEMENTS
 
 
@@ -105,6 +105,25 @@ def main():
         default=DEPARTEMENTS,
     )
     subparser.set_defaults(func=cadastre_ld.process)
+
+    subparser = subparsers.add_parser(
+        "charge_communes_cadastre",
+        help="Charge une version des contours de commune du Cadastre JSON",
+        description="Charge une version des contours de commune du Cadastre JSON",
+    )
+    subparser.add_argument(
+        "--forceload", "-f",
+        action='store_true',
+        help="Forcer le re-chargement en base même sans téléchargement"
+    )
+    subparser.add_argument(
+        "departements",
+        type=str,
+        help="Départements à traiter",
+        nargs="*",
+        default=DEPARTEMENTS,
+    )
+    subparser.set_defaults(func=cadastre_communes.process)
 
     subparser = subparsers.add_parser(
         "download_commune_summary",

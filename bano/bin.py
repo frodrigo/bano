@@ -138,6 +138,12 @@ def main():
     subparser.set_defaults(func=datagouv_cs.process)
 
     subparser = subparsers.add_parser(
+        "menage_noms_ban",
+        help="Nettoyage des noms BAN",
+    )
+    subparser.set_defaults(func=ban.menage_noms_ban)
+
+    subparser = subparsers.add_parser(
         "update_bis_table",
         help="Identifie les indices de répétition b,t,q assimilables à bis, ter, quater",
     )

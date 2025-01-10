@@ -119,3 +119,6 @@ def get_destination(departement):
 
 def update_bis_table(**kwargs):
     sql_process("update_table_rep_b_as_bis", dict())
+
+def menage_noms_ban(**kwargs):
+    sql_process("menage_noms_ban", dict())

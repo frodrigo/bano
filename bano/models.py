@@ -629,7 +629,9 @@ class Points_nommes:
         ) in data:
             for single_fantoir in fantoir.split(';'):
                 # if ';' in fantoir:
-                #     print(single_fantoir,nom)
+                #     print(fantoir, single_fantoir,nom)
+                if single_fantoir and single_fantoir[0:5] != self.code_insee:
+                    continue
                 self.add_point_nomme(
                     Point_nomme(
                         self.code_insee,
@@ -642,7 +644,6 @@ class Points_nommes:
                         fantoir=single_fantoir,
                         nom_ancienne_commune=nom_ancienne_commune,
                     )
-
             )
 
     def charge_points_nommes_place_osm(self):
@@ -658,18 +659,21 @@ class Points_nommes:
             fantoir,
             nom_ancienne_commune,
         ) in data:
-            self.add_point_nomme(
-                Point_nomme(
-                    self.code_insee,
-                    "OSM",
-                    "place",
-                    x,
-                    y,
-                    nom,
-                    code_insee_ancienne_commune=code_insee_ancienne_commune,
-                    fantoir=fantoir,
-                    nom_ancienne_commune=nom_ancienne_commune,
-                )
+            for single_fantoir in fantoir.split(';'):
+                if single_fantoir and single_fantoir[0:5] != self.code_insee:
+                    continue
+                self.add_point_nomme(
+                    Point_nomme(
+                        self.code_insee,
+                        "OSM",
+                        "place",
+                        x,
+                        y,
+                        nom,
+                        code_insee_ancienne_commune=code_insee_ancienne_commune,
+                        fantoir=single_fantoir,
+                        nom_ancienne_commune=nom_ancienne_commune,
+                    )
             )
 
     def charge_points_nommes_numeros_ban(self):

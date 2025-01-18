@@ -51,6 +51,7 @@ def process_unitaire(code_insee,verbose,source_pifometre):
         noms.add_fantoir(topo)
         if verbose: print('noms.remplit_fantoir_par_nom_sous_commune')
         noms.remplit_fantoir_par_nom_sous_commune()
+        noms.remplit_fantoir_osm_par_fantoir_ban()
         if verbose: print('points_nommes.complete_fantoir')
         points_nommes.complete_fantoir(noms)
 

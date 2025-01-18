@@ -160,11 +160,26 @@ class Noms:
                         ] = {}
                     if not t.nom in self.fantoir_par_nom_sous_commune[t.code_insee_ancienne_commune]:
                         self.fantoir_par_nom_sous_commune[t.code_insee_ancienne_commune][
-                            t.nom
+                            t.nom_normalise
                         ] = t.fantoir
                 else:
                     if not t.nom in self.fantoir_par_nom_sous_commune:
-                        self.fantoir_par_nom_sous_commune[t.nom] = t.fantoir
+                        self.fantoir_par_nom_sous_commune[t.nom_normalise] = t.fantoir
+
+    def remplit_fantoir_osm_par_fantoir_ban(self):
+        osm_candidats = set()
+        fantoir_ban = {}
+        for t in self.triplets_nom_fantoir_source:
+            if t.source == 'OSM' and not t.fantoir:
+                osm_candidats.add(t)
+            if t.source == 'BAN' and t.fantoir:
+                fantoir_ban[f"{t.code_insee_ancienne_commune}{t.nom_normalise}"] = t.fantoir
+
+        with open('log_ajout_fantoir_ban.csv','a') as f:
+            for t in osm_candidats:
+                if f"{t.code_insee_ancienne_commune}{t.nom_normalise}" in fantoir_ban:
+                    t.fantoir = fantoir_ban[f"{t.code_insee_ancienne_commune}{t.nom_normalise}"]
+                    f.write(f"{t._as_csv_format_bano(dict())}\n")
 
     def enregistre(self, correspondance):
         sql_process(
@@ -469,7 +484,7 @@ class Adresses:
         for a in self:
             if a.fantoir:
                 continue
-            nom = a.voie or a.place
+            nom = a.voie_normalisee or a.place_normalisee
             if a.code_insee_ancienne_commune:
                 a.fantoir = noms.fantoir_par_nom_sous_commune.get(
                     a.code_insee_ancienne_commune
@@ -738,9 +753,9 @@ class Points_nommes:
             if a.fantoir and a.fantoir[0:5] == self.code_insee:
                 continue
             if a.code_insee_ancienne_commune and a.code_insee_ancienne_commune in noms.fantoir_par_nom_sous_commune:
-                a.fantoir = noms.fantoir_par_nom_sous_commune[a.code_insee_ancienne_commune].get(a.nom)
+                a.fantoir = noms.fantoir_par_nom_sous_commune[a.code_insee_ancienne_commune].get(a.nom_normalise)
             else:
-                a.fantoir = noms.fantoir_par_nom_sous_commune.get(a.nom)
+                a.fantoir = noms.fantoir_par_nom_sous_commune.get(a.nom_normalise)
 
     def enregistre(self, correspondance):
         sql_process(

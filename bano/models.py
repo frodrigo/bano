@@ -393,40 +393,42 @@ class Adresses:
                 1,
                 2,
             ):
-                self.add_adresse(
-                    Adresse(
-                        self.code_insee,
-                        lon,
-                        lat,
-                        numero,
-                        "OSM",
-                        voie=voie,
-                        place=place,
-                        fantoir=fantoir,
-                        code_postal=code_postal,
-                        code_insee_ancienne_commune=code_insee_ancienne_commune,
-                        nom_ancienne_commune=nom_ancienne_commune,
+                for num_unique in numero.split(';'):
+                    self.add_adresse(
+                        Adresse(
+                            self.code_insee,
+                            lon,
+                            lat,
+                            num_unique,
+                            "OSM",
+                            voie=voie,
+                            place=place,
+                            fantoir=fantoir,
+                            code_postal=code_postal,
+                            code_insee_ancienne_commune=code_insee_ancienne_commune,
+                            nom_ancienne_commune=nom_ancienne_commune,
+                        )
                     )
-                )
             if provenance in (
                 3,
                 4,
             ) and tags.get("name"):
-                self.add_adresse(
-                    Adresse(
-                        self.code_insee,
-                        lon,
-                        lat,
-                        numero,
-                        "OSM",
-                        voie=tags["name"],
-                        place=None,
-                        fantoir=fantoir,
-                        code_postal=code_postal,
-                        code_insee_ancienne_commune=code_insee_ancienne_commune,
-                        nom_ancienne_commune=nom_ancienne_commune,
+                for num_unique in numero.split(';'):
+                    self.add_adresse(
+                        Adresse(
+                            self.code_insee,
+                            lon,
+                            lat,
+                            num_unique,
+                            "OSM",
+                            voie=tags["name"],
+                            place=None,
+                            fantoir=fantoir,
+                            code_postal=code_postal,
+                            code_insee_ancienne_commune=code_insee_ancienne_commune,
+                            nom_ancienne_commune=nom_ancienne_commune,
+                        )
                     )
-                )
             if (
                 provenance
                 in (
@@ -437,21 +439,22 @@ class Adresses:
                 and tags.get("ref:FR:FANTOIR")
             ):
                 if tags["ref:FR:FANTOIR"][0:5] == self.code_insee:
-                    self.add_adresse(
-                        Adresse(
-                            self.code_insee,
-                            lon,
-                            lat,
-                            numero,
-                            "OSM",
-                            voie=tags["name"],
-                            place=None,
-                            fantoir=tags["ref:FR:FANTOIR"],
-                            code_postal=code_postal,
-                            code_insee_ancienne_commune=code_insee_ancienne_commune,
-                            nom_ancienne_commune=nom_ancienne_commune,
+                    for num_unique in numero.split(';'):
+                        self.add_adresse(
+                            Adresse(
+                                self.code_insee,
+                                lon,
+                                lat,
+                                num_unique,
+                                "OSM",
+                                voie=tags["name"],
+                                place=None,
+                                fantoir=tags["ref:FR:FANTOIR"],
+                                code_postal=code_postal,
+                                code_insee_ancienne_commune=code_insee_ancienne_commune,
+                                nom_ancienne_commune=nom_ancienne_commune,
+                            )
                         )
-                    )
 
     def noms_des_adresses(self, noms):
         for a in self:

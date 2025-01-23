@@ -250,7 +250,7 @@ class Adresse:
         self.code_insee_ancienne_commune = code_insee_ancienne_commune
         self.nom_ancienne_commune = nom_ancienne_commune
         self.voie_normalisee = hp.normalize(self.voie) if self.voie else None
-        self.place_normalisee = hp.format_toponyme(self.place) if self.place else None
+        self.place_normalisee = hp.normalize(self.place) if self.place else None
         self.niveau = (
             self.code_insee_ancienne_commune
             if self.code_insee_ancienne_commune

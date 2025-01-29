@@ -42,7 +42,7 @@ UNNEST(
 ),
 polys
 AS
-(SELECT  st_centroid(pt.way) AS way,
+(SELECT  ST_PointOnSurface(pt.way) AS way,
         name_osm.name,
         name_osm.name_tag,
         tags,

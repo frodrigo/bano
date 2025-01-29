@@ -93,7 +93,7 @@ WHERE   rang = 1
 GROUP BY 2,3,4,5,6,7),
 centroide_lignes_agregees
 AS
-(SELECT ST_Centroid(ST_LineMerge(ST_Collect(way_line))) way,
+(SELECT ST_PointOnSurface(ST_LineMerge(ST_Collect(way_line))) way,
         name,
         name_tag,
         insee_ac,
@@ -131,7 +131,7 @@ FROM    (SELECT pl.way point,
                 pl.highway NOT IN ('bus_stop','platform') AND
                 pl.name != ''
         UNION
-        SELECT  ST_Centroid(pl.way),
+        SELECT  ST_PointOnSurface(pl.way),
                 pl.name,
                 pl."ref:FR:FANTOIR" f
         FROM    (SELECT way FROM planet_osm_polygon WHERE "ref:INSEE" = '__code_insee__') p

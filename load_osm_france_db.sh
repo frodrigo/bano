@@ -33,7 +33,7 @@ REPL=${PBF_URL/extracts/replication/}
 REPL=${REPL/.osm.pbf/\/minute/}
 sed -i -e "s|baseUrl.*|baseUrl=${REPL}|" configuration.txt
 # 5 jours
-sed -i -e "s|maxInterval.*|maxInterval=432000|" configuration.txt
+sed -i -e "s|maxInterval.*|maxInterval=36000|" configuration.txt
 
 imposm import \
   -config $SCRIPT_DIR/imposm.config \

@@ -58,7 +58,11 @@ D'abord renseigner le fichier imposm.config, puis lancer :
 Chaque source a sa commande de chargement
 ### TOPO (ex FANTOIR)
 ```
-bano charge_topo
+bano charge_topo_sas --version topo
+
+puis vérification manuelle des deltas via la table topo_comparaison. Si ok :
+
+bano publish_topo
 ```
 ### BAN
 ```

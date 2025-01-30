@@ -115,9 +115,11 @@ def get_destination(version):
     return Path(os.environ['DATA_DIR']) / f'{version}.csv'
 
 def publish(**kwargs):
-    sql_process('publish_topo',{})
+    sql_process('topo_publish',{})
 
 def process(version, forceload, **kwargs):
+    # sql_process('topo_comparaison',{})
+
     if dowload(version) or forceload:
         update_table_in_db(version)
 
@@ -132,3 +134,6 @@ def process(version, forceload, **kwargs):
 
 # stats TOPO octobre 2024 (dispo octobre 2024)
 # {'CHEM': 26317, 'CITE': 7797, 'QUAI': 3705, 'VOIE': 2821, 'COUR': 1488, 'PARC': 760, 'CTRE': 590, 'CLOS': 5084, 'VOIES': 86, 'MAIL': 308, 'CITES': 454, 'PROM': 1801, 'COTE': 1057, 'PTTE': 578, 'PONT': 631, 'ZONE': 337, 'RUIS': 716, 'TSSE': 416, 'PORT': 130, 'VCHE': 228, 'PASS': 564, 'MAIS': 110, 'JARD': 53, 'PLAG': 60, 'CAMI': 1373, 'CALL': 128, 'PLAN': 358, 'PIST': 125}
+
+# stats TOPO décembre 2024
+# {'CLOS': 5091, 'RUIS': 716, 'PROM': 1803, 'CITE': 7801, 'CHEM': 14290, 'VOIE': 2822, 'ZONE': 337, 'COTE': 1061, 'QUAI': 3706, 'PASS': 374, 'COUR': 1614, 'CITES': 454, 'MAIL': 309, 'PARC': 761, 'PTTE': 578, 'CTRE': 590, 'PONT': 632, 'PORT': 130, 'TSSE': 416, 'JARD': 53, 'MAIS': 110, 'VCHE': 227, 'VOIES': 86, 'PLAN': 358, 'CAMI': 1374, 'CALL': 129, 'PIST': 127, 'PLAG': 60}

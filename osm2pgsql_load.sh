@@ -11,6 +11,6 @@ mkdir -p $DOWNLOAD_DIR
 cd $DOWNLOAD_DIR
 wget -NS $PBF_URL
 
-osm2pgsql -S $BANO_DIR/osm2pgsql.style -l -d bano -U cadastre -p osm2pgsql $DOWNLOAD_DIR/$PBF_FILE
+osm2pgsql -S $BANO_DIR/osm2pgsql.style -l -d "postgresql://${PGCON_BANO}" -p osm2pgsql $DOWNLOAD_DIR/$PBF_FILE
 
 $pgsql_BANO -f $BANO_DIR/sql/finalisation_osm2pgsql.sql

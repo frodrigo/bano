@@ -32,7 +32,7 @@ imposm diff \
   -dbschema-production public \
   ${DOWNLOAD_DIR}/changes.osc.gz
 echo `date`" : Osm2pgsql"
-osm2pgsql -a -S osm2pgsql.style -s -l -d bano -U cadastre -p osm2pgsql $DOWNLOAD_DIR/changes.osc.gz
+osm2pgsql -a -S osm2pgsql.style -s -l -d "postgresql://${PGCON_BANO}" -p osm2pgsql $DOWNLOAD_DIR/changes.osc.gz
 
 rm ${lockfile}
 

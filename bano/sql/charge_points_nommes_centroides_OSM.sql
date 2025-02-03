@@ -1,4 +1,6 @@
 WITH
+planet_osm_polygon_insee AS
+(SELECT ST_Union(way) AS way FROM planet_osm_polygon WHERE "ref:INSEE" = '__code_insee__'),
 lignes_brutes
 AS
 (SELECT l.way,
@@ -10,7 +12,7 @@ AS
         unnest(array["ref:FR:FANTOIR","ref:FR:FANTOIR:left","ref:FR:FANTOIR:right"]) AS fantoir,
         ST_Within(l.way,p.way)::integer as within,
         a9.nom AS nom_ac
-FROM    (SELECT way FROM planet_osm_polygon WHERE "ref:INSEE" = '__code_insee__') p
+FROM    planet_osm_polygon_insee p
 JOIN    planet_osm_line l
 ON      ST_Intersects(l.way, p.way)
 LEFT OUTER JOIN (SELECT * FROM polygones_insee_a9 WHERE insee_a8 = '__code_insee__') a9
@@ -53,7 +55,7 @@ SELECT  l.way,
         "ref:FR:FANTOIR" AS fantoir,
         ST_Within(l.way,p.way)::integer as within,
         a9.nom AS nom_ac
-FROM    (SELECT way FROM planet_osm_polygon WHERE "ref:INSEE" = '__code_insee__') p
+FROM    planet_osm_polygon_insee p
 JOIN    planet_osm_rels l
 ON      ST_Intersects(l.way, p.way)
 LEFT OUTER JOIN (SELECT * FROM polygones_insee_a9 WHERE insee_a8 = '__code_insee__') a9
@@ -125,7 +127,7 @@ AS
 FROM    (SELECT pl.way point,
                 pl.name,
                 pl."ref:FR:FANTOIR" fantoir
-        FROM    (SELECT way FROM planet_osm_polygon WHERE "ref:INSEE" = '__code_insee__') p
+        FROM    planet_osm_polygon_insee p
         JOIN    planet_osm_point    pl
         ON      pl.way && p.way                 AND
                 ST_Intersects(pl.way, p.way)
@@ -137,7 +139,7 @@ FROM    (SELECT pl.way point,
         SELECT  ST_PointOnSurface(pl.way),
                 pl.name,
                 pl."ref:FR:FANTOIR" f
-        FROM    (SELECT way FROM planet_osm_polygon WHERE "ref:INSEE" = '__code_insee__') p
+        FROM    planet_osm_polygon_insee p
         JOIN    planet_osm_polygon  pl
         ON      pl.way && p.way                 AND
                 ST_Intersects(pl.way, p.way)

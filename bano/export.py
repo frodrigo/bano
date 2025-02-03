@@ -134,8 +134,8 @@ def process(departements, **kwargs):
         if not hp.is_valid_dept(dept):
             print(f"Code {dept} invalide pour un département - abandon")
             continue
-        save_as_shp(dept)
+        # save_as_shp(dept)
         csv_data = get_csv_data(dept)
-        save_as_csv(dept,csv_data)
-        save_as_ttl(dept,csv_data)
+        # save_as_csv(dept,csv_data)
+        # save_as_ttl(dept,csv_data)
         save_as_json(dept)

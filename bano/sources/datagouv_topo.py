@@ -137,3 +137,6 @@ def process(version, forceload, **kwargs):
 
 # stats TOPO décembre 2024
 # {'CLOS': 5091, 'RUIS': 716, 'PROM': 1803, 'CITE': 7801, 'CHEM': 14290, 'VOIE': 2822, 'ZONE': 337, 'COTE': 1061, 'QUAI': 3706, 'PASS': 374, 'COUR': 1614, 'CITES': 454, 'MAIL': 309, 'PARC': 761, 'PTTE': 578, 'CTRE': 590, 'PONT': 632, 'PORT': 130, 'TSSE': 416, 'JARD': 53, 'MAIS': 110, 'VCHE': 227, 'VOIES': 86, 'PLAN': 358, 'CAMI': 1374, 'CALL': 129, 'PIST': 127, 'PLAG': 60}
+
+# stats TOPO janvier 2025
+# {'CITE': 7794, 'CHEM': 14280, 'VOIE': 2822, 'COUR': 1614, 'PARC': 760, 'QUAI': 3701, 'PONT': 632, 'PORT': 129, 'PROM': 1809, 'VCHE': 226, 'CTRE': 589, 'COTE': 1071, 'MAIL': 310, 'CLOS': 5088, 'CITES': 454, 'PASS': 379, 'PTTE': 580, 'TSSE': 416, 'JARD': 53, 'MAIS': 110, 'ZONE': 336, 'VOIES': 86, 'RUIS': 716, 'PIST': 126, 'CAMI': 1377, 'PLAN': 359, 'CALL': 131, 'PLAG': 60}

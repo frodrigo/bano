@@ -77,3 +77,7 @@ bano charge_cog
 ```
 bano charge_ld_cadastre
 ```
+### Commmes du cadastre
+```
+bano charge_communes_cadastre
+```

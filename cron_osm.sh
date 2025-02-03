@@ -1,6 +1,6 @@
 #!/bin/bash
 
-#set -e
+set -e
 
 lockfile=imposm.lock
 

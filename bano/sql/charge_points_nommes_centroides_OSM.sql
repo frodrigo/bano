@@ -1,7 +1,7 @@
 WITH
 p
 AS
-(SELECT way FROM osm2pgsql_polygon WHERE "ref:INSEE" = '__code_insee__'),
+(SELECT ST_Union(way) AS way FROM osm2pgsql_polygon WHERE "ref:INSEE" = '__code_insee__'),
 lignes_brutes
 AS
 (SELECT 'l'||l.osm_id AS id,
@@ -146,7 +146,7 @@ AS
 FROM    (SELECT pl.way point,
                 pl.name,
                 pl."ref:FR:FANTOIR" fantoir
-        FROM    (SELECT way FROM planet_osm_polygon WHERE "ref:INSEE" = '__code_insee__') p
+        FROM    p
         JOIN    planet_osm_point    pl
         ON      pl.way && p.way                 AND
                 ST_Intersects(pl.way, p.way)
@@ -158,7 +158,7 @@ FROM    (SELECT pl.way point,
         SELECT  ST_PointOnSurface(pl.way),
                 pl.name,
                 pl."ref:FR:FANTOIR" f
-        FROM    (SELECT way FROM planet_osm_polygon WHERE "ref:INSEE" = '__code_insee__') p
+        FROM    p
         JOIN    planet_osm_polygon  pl
         ON      pl.way && p.way                 AND
                 ST_Intersects(pl.way, p.way)

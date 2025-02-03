@@ -107,11 +107,11 @@ def process(departements, **kwargs):
         if not hp.is_valid_dept(dept):
             print(f"Code {dept} invalide pour un département - abandon")
             continue
-        publish_as_shp(dept)
-        publish_as_csv(dept)
-        publish_as_ttl(dept)
+        # publish_as_shp(dept)
+        # publish_as_csv(dept)
+        # publish_as_ttl(dept)
         publish_as_json(dept)
 
 def process_full(**kwargs):
-    publish_as_full_csv()
+    # publish_as_full_csv()
     publish_as_full_json()

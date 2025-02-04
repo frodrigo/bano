@@ -1,4 +1,5 @@
 CREATE INDEX idx_planet_osm_point_fantoir ON             planet_osm_point("ref:FR:FANTOIR");
+CREATE INDEX idx_planet_osm_point_way_vide ON            planet_osm_point USING gist(way) WHERE place != '' AND name != '' AND "ref:FR:FANTOIR" != '';
 CREATE INDEX idx_planet_osm_point_housenumber ON         planet_osm_point("addr:housenumber");
 CREATE INDEX idx_planet_osm_line_fantoir ON              planet_osm_line("ref:FR:FANTOIR");
 CREATE INDEX idx_planet_osm_polygon_highway_name ON      planet_osm_polygon(highway,name);

@@ -1,27 +1,44 @@
-BEGIN;
-
-DROP TABLE IF EXISTS numeros_export CASCADE;
-CREATE TABLE numeros_export
-AS
-WITH
+DROP TABLE IF EXISTS cp_fantoir CASCADE;
+CREATE TEMP TABLE
 cp_fantoir
 AS
 (SELECT fantoir,
         MIN(code_postal) AS min_cp
 FROM    bano_adresses
-GROUP BY 1),
+GROUP BY 1);
+CREATE INDEX idx_cp_fantoir_fantoir ON cp_fantoir(fantoir);
+
+DROP VIEW IF EXISTS num_norm CASCADE;
+CREATE TEMP VIEW
 num_norm
 AS
 (SELECT REPLACE(REPLACE(REPLACE(REPLACE(REPLACE(REPLACE(REPLACE(REPLACE(REGEXP_REPLACE(UPPER(numero),
                         '^0*',''),'BIS','B'),'TER','T'),'QUATER','Q'),'QUAT','Q'),' ',''),'à','-'),';',','),'"','') AS num,
         *
-FROM    bano_adresses),
+FROM    bano_adresses);
+
+DROP TABLE IF EXISTS num_norm_id CASCADE;
+CREATE TEMP TABLE
 num_norm_id
 AS
+WITH a AS
 (SELECT fantoir||'-'||num AS id_add,
         row_number() OVER (PARTITION BY fantoir||num ORDER BY CASE WHEN source = 'OSM' THEN 1 ELSE 2 END) AS rang,
-        *
-FROM    num_norm),
+        fantoir,
+        numero,
+        code_postal,
+        code_insee,
+        source,
+        lat,
+        lon,
+        geometrie
+FROM    num_norm)
+SELECT * FROM a WHERE rang = 1;
+
+DROP TABLE IF EXISTS nom_fantoir_with CASCADE;
+CREATE TABLE nom_fantoir_with
+AS
+WITH
 nom_fantoir_rank
 AS
 (
@@ -63,37 +80,56 @@ AS
         nom_fantoir_uniq_rank
     GROUP BY
         fantoir
-),
-resultats_multi_cp
-AS
+)
+SELECT * FROM nom_fantoir;
+
+DROP TABLE IF EXISTS numeros_export CASCADE;
+CREATE TABLE numeros_export AS
 (SELECT dep,
         n.code_insee,
         n.fantoir,
         id_add,
         numero,
         nf.noms AS nom_voie,
-        COALESCE(n.code_postal,pp.code_postal,min_cp) code_postal,
+        n.code_postal,
         cn.libelle,
         source,
         lat,
         lon,
-        n.geometrie,
-        RANK() OVER (PARTITION BY id_add ORDER BY pp.id) rang_postal
+        n.geometrie
 FROM    num_norm_id n
-JOIN    nom_fantoir nf
+JOIN    nom_fantoir_with nf
 USING   (fantoir)
 JOIN    (SELECT dep, com, libelle FROM cog_commune WHERE typecom in ('ARM','COM')) cn
 ON      (cn.com = code_insee)
+);
+
+DROP TABLE num_norm_id;
+DROP TABLE nom_fantoir_with;
+
+WITH n
+AS
+(SELECT DISTINCT ON (id_add)
+        id_add,
+        COALESCE(n.code_postal,pp.code_postal,min_cp) code_postal
+FROM    numeros_export n
 LEFT OUTER JOIN    polygones_postaux pp
 ON      ST_Contains(pp.geometrie, n.geometrie)
 LEFT OUTER JOIN cp_fantoir
-USING   (fantoir)
-WHERE   rang = 1)
-SELECT  *
-FROM    resultats_multi_cp
-WHERE   rang_postal = 1;
+ON      pp.code_postal IS NULL AND cp_fantoir.fantoir = n.fantoir
+WHERE
+    n.code_postal IS NULL
+ORDER BY id_add, pp.id
+)
+UPDATE numeros_export
+SET code_postal = n.code_postal
+FROM n
+WHERE
+    numeros_export.code_postal IS NULL AND
+    numeros_export.id_add = n.id_add
+;
 
-CREATE INDEX idx_numeros_export_dep ON numeros_export(dep);
+DROP TABLE cp_fantoir;
 
 DROP TABLE IF EXISTS numeros_export_importance CASCADE;
 CREATE TABLE numeros_export_importance
@@ -103,10 +139,11 @@ SELECT fantoir,
        count(*) AS nombre_adresses
 FROM   numeros_export
 GROUP BY fantoir;
+CREATE INDEX numeros_export_importance_idx_fantoir ON numeros_export_importance(fantoir);
 
 
-DROP TABLE IF EXISTS export_voies_adresses_json CASCADE;
-CREATE TABLE export_voies_adresses_json
+DROP VIEW IF EXISTS export_voies_adresses_json CASCADE;
+CREATE VIEW export_voies_adresses_json
 AS
 SELECT c.dep,
        fantoir AS id,
@@ -127,12 +164,14 @@ SELECT c.dep,
 FROM   numeros_export ne
 JOIN   cog_pyramide_admin AS cog
 USING  (code_insee)
-JOIN   (SELECT fantoir,
+JOIN   (SELECT DISTINCT ON (fantoir)
+               fantoir,
                lon,
-               lat,
-               ROW_NUMBER() OVER (PARTITION BY fantoir ORDER BY CASE source WHEN 'OSM' THEN 1 WHEN 'BAN' THEN 3 ELSE 2 END, CASE nature WHEN 'centroide' THEN 2 ELSE 1 END) AS rang_par_fantoir
+               lat
        FROM    bano_points_nommes
-       WHERE   fantoir IS NOT NULL) AS pn
+       WHERE   fantoir IS NOT NULL
+       ORDER BY fantoir, CASE source WHEN 'OSM' THEN 1 WHEN 'BAN' THEN 3 ELSE 2 END, CASE nature WHEN 'centroide' THEN 2 ELSE 1 END
+       ) AS pn
 USING  (fantoir)
 JOIN   infos_communes c
 USING  (code_insee)
@@ -140,24 +179,26 @@ JOIN   numeros_export_importance
 USING  (fantoir)
 LEFT JOIN cog_commune AS a ON
     cog.typecom = 'ARM' AND
-    cog.code_insee = a.com
+    cog.code_insee = a.com AND
+    a.dep = c.dep
 LEFT JOIN cog_commune AS pa ON
-    pa.com = a.comparent
-WHERE  pn.rang_par_fantoir = 1
+    pa.com = a.comparent AND
+    pa.dep = c.dep
 GROUP BY 1,2,3,4,5,6,7,8,9,10,11,12
-ORDER BY 1;
+;
 
-CREATE INDEX idx_export_voies_adresses_json_dep ON export_voies_adresses_json(dep);
-
-DROP TABLE IF EXISTS export_voies_ld_sans_adresses_json CASCADE;
-CREATE TABLE export_voies_ld_sans_adresses_json
-AS
-WITH
-set_fantoir
-AS
+DROP TABLE IF EXISTS set_fantoir CASCADE;
+CREATE TABLE IF NOT EXISTS set_fantoir AS
 (SELECT fantoir FROM bano_points_nommes
 EXCEPT
-SELECT fantoir FROM numeros_export),
+SELECT fantoir FROM numeros_export)
+;
+CREATE INDEX idx_set_fantoir_fantoir ON set_fantoir(fantoir);
+
+DROP VIEW IF EXISTS export_voies_ld_sans_adresses_json CASCADE;
+CREATE VIEW export_voies_ld_sans_adresses_json
+AS
+WITH
 resultats_multi_cp
 AS
 (SELECT pn.fantoir AS id,
@@ -203,7 +244,3 @@ LEFT JOIN cog_commune AS pa ON
 SELECT *
 FROM resultats_multi_cp
 WHERE rang_par_fantoir = 1;
-
-CREATE INDEX idx_export_voies_ld_sans_adresses_json_dep ON export_voies_ld_sans_adresses_json(dep);
-
-COMMIT;

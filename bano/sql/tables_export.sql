@@ -1,5 +1,41 @@
 BEGIN;
 
+DROP TABLE IF EXISTS cp_fantoir CASCADE;
+CREATE TABLE cp_fantoir AS
+SELECT
+    fantoir,
+    MIN(code_postal) AS min_cp
+FROM
+    bano_adresses
+GROUP BY
+    1
+;
+CREATE INDEX idx_cp_fantoir_fantoir ON cp_fantoir(fantoir);
+
+DROP TABLE IF EXISTS num_norm CASCADE;
+CREATE TEMP TABLE num_norm AS
+SELECT
+    REPLACE(REPLACE(REPLACE(REPLACE(REPLACE(REPLACE(REPLACE(REPLACE(REGEXP_REPLACE(UPPER(numero),
+        '^0*',''),'BIS','B'),'TER','T'),'QUATER','Q'),'QUAT','Q'),' ',''),'à','-'),';',','),'"','') AS num,
+    *
+FROM
+    bano_adresses
+;
+
+DROP TABLE IF EXISTS num_norm_id CASCADE;
+CREATE TEMP TABLE num_norm_id AS
+SELECT
+    fantoir||'-'||num AS id_add,
+    row_number() OVER (PARTITION BY fantoir||num ORDER BY CASE WHEN source = 'OSM' THEN 1 ELSE 2 END) AS rang,
+    *
+FROM
+    num_norm
+;
+CREATE INDEX idx_num_norm_id_fantoir ON num_norm_id(fantoir);
+CREATE INDEX idx_num_norm_id_geometrie ON num_norm_id USING gist(geometrie);
+
+DROP TABLE num_norm;
+
 DROP TABLE IF EXISTS numeros_export CASCADE;
 CREATE TABLE numeros_export
 AS

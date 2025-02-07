@@ -180,11 +180,9 @@ class Noms:
             if t.source == 'BAN' and t.fantoir:
                 fantoir_ban[f"{t.code_insee_ancienne_commune}{t.nom_normalise}"] = t.fantoir
 
-        with open('log_ajout_fantoir_ban.csv','a') as f:
-            for t in osm_candidats:
-                if f"{t.code_insee_ancienne_commune}{t.nom_normalise}" in fantoir_ban:
-                    t.fantoir = fantoir_ban[f"{t.code_insee_ancienne_commune}{t.nom_normalise}"]
-                    f.write(f"{t._as_csv_format_bano(dict())}\n")
+        for t in osm_candidats:
+            if f"{t.code_insee_ancienne_commune}{t.nom_normalise}" in fantoir_ban:
+                t.fantoir = fantoir_ban[f"{t.code_insee_ancienne_commune}{t.nom_normalise}"]
 
     def enregistre(self, correspondance):
         sql_process(
@@ -195,6 +193,7 @@ class Noms:
         for t in set(self.triplets_nom_fantoir_source):
             if t.fantoir:
                 io_in_csv.write(t._as_csv_format_bano(correspondance) + "\n")
+
         io_in_csv.seek(0)
         with bano_db.cursor() as cur_insert:
             cur_insert.copy_from(

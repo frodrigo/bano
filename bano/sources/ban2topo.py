@@ -21,12 +21,17 @@ def process(code_insee,**kwargs):
     purge_noms_ban_dans_topo(code_insee)
     noms_ban = get_noms_ban(code_insee)
     if len(noms_ban) > 0:
-        noms_ban_norm = set()
         topo = models.Topo(code_insee)
         dept = get_code_dept_from_insee(code_insee)
+
+        noms_supplementaire = set()
         for i,n in enumerate(noms_ban):
             nom_norm = normalize(n[0])
             if not nom_norm in topo.topo:
-                noms_ban_norm.add(f"'{dept}','{code_insee}','{pseudo_fantoir(i,code_insee)}',' ','{nom_norm}','B','B','0000000'")
+                noms_supplementaire.add(nom_norm)
+        noms_ban_norm = []
+        for i,nom_norm in enumerate(sorted(noms_supplementaire)):
+            noms_ban_norm.append(f"'{dept}','{code_insee}','{pseudo_fantoir(i,code_insee)}',' ','{nom_norm}','B','B','0000000'")
+
         if len(noms_ban_norm)>0:
             add_noms_ban_dans_topo(code_insee, f"({'),('.join(noms_ban_norm)})")

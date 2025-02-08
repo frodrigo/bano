@@ -11,8 +11,8 @@ source config
 bano="python -m bano"
 
 # Sources
-cat deplist.txt | parallel -j $PARALLEL_JOBS export LANG=$LANG\; $bano charge_ban --forceload {1}
-cat deplist.txt | parallel -j $PARALLEL_JOBS export LANG=$LANG\; $bano charge_ld_cadastre --forceload {1}
+cat deplist.txt | parallel --halt now,fail=1 -j $PARALLEL_JOBS export LANG=$LANG\; $bano charge_ban --forceload {1}
+cat deplist.txt | parallel --halt now,fail=1 -j $PARALLEL_JOBS export LANG=$LANG\; $bano charge_ld_cadastre --forceload {1}
 $bano menage_noms_ban
 $bano update_bis_table
 
@@ -29,7 +29,7 @@ $bano download_commune_summary
 $bano update_stats_departementales
 
 # BANO
-cat deplist.txt        | parallel -j $PARALLEL_JOBS export LANG=$LANG\; $bano rapprochement --dept {1}
+cat deplist.txt        | parallel --halt now,fail=1 -j $PARALLEL_JOBS export LANG=$LANG\; $bano rapprochement --dept {1}
 
 echo 'rapprochement ok'
 
@@ -39,11 +39,11 @@ echo 'preparation export finie'
 
 # exports
 echo 'export'
-cat deplist.txt | parallel -j $PARALLEL_JOBS $bano export {1}
+cat deplist.txt | parallel --halt now,fail=1 -j $PARALLEL_JOBS $bano export {1}
 echo 'export fini'
 
 # copie+zip dans le dossier web
-cat deplist.txt | parallel -j $PARALLEL_JOBS $bano publish {1}
+cat deplist.txt | parallel --halt now,fail=1 -j $PARALLEL_JOBS $bano publish {1}
 $bano publish_aggregate
 
 # ménage PostgreSQL

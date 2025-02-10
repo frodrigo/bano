@@ -603,7 +603,7 @@ class Point_nomme:
         return f"fantoir : {self.fantoir}, source : {self.source}, nom : {self.nom} ({self.nom_normalise}), nature : {self.nature}, sous_commune : {self.code_insee_ancienne_commune}"
 
     def _as_csv_format_bano(self, correspondance):
-        return f"{correspondance.get(self.fantoir,self.fantoir) if self.fantoir else ''}\t{self.nom}\t{self.code_insee}\t{self.code_dept}\t{self.nature}\t{self.code_insee_ancienne_commune if self.code_insee_ancienne_commune else ''}\t{self.nom_ancienne_commune if self.nom_ancienne_commune else ''}\t{self.source}\t{self.lon}\t{self.lat}"
+        return f"{correspondance.get(self.fantoir,self.fantoir) if self.fantoir else ''}\t{self.nom}\t{self.nom_tag if self.nom_tag else ''}\t{self.code_insee}\t{self.code_dept}\t{self.nature}\t{self.code_insee_ancienne_commune if self.code_insee_ancienne_commune else ''}\t{self.nom_ancienne_commune if self.nom_ancienne_commune else ''}\t{self.source}\t{self.lon}\t{self.lat}"
 
 
 class Points_nommes:
@@ -794,6 +794,7 @@ class Points_nommes:
                 columns=(
                     "fantoir",
                     "nom",
+                    "nom_tag",
                     "code_insee",
                     "code_dept",
                     "nature",

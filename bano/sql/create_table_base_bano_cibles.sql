@@ -28,6 +28,7 @@ CREATE INDEX IF NOT EXISTS idx_bano_adresses_pifo_code_insee_source ON bano_adre
 CREATE TABLE IF NOT EXISTS bano_points_nommes (
     fantoir text,
     nom text,
+    nom_tag text,
     code_insee text,
     code_dept text,
     nature text,

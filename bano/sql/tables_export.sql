@@ -89,13 +89,19 @@ SELECT c.dep,
        code_postal AS postcode,
        ROUND(pn.lat::numeric,6)::float AS lat,
        ROUND(pn.lon::numeric,6)::float AS lon,
-       nom_com AS city,
+       city AS city,
        nom_dep AS departement,
        nom_reg AS region,
        ROUND(LOG(c.adm_weight+LOG(c.population+1)/3)::numeric*LOG(1+LOG(nombre_adresses+1)+LOG(longueur_max+1)+LOG(CASE WHEN nom_voie like 'Boulevard%' THEN 4 WHEN nom_voie LIKE 'Place%' THEN 4 WHEN nom_voie LIKE 'Espl%' THEN 4 WHEN nom_voie LIKE 'Av%' THEN 3 WHEN nom_voie LIKE 'Rue %' THEN 2 ELSE 1 END))::numeric,4)::float AS importance,
        string_agg(numero||'$$$'||ROUND(ne.lat::numeric,6)::text||'$$$'||ROUND(ne.lon::numeric,6)::text,'@@@' ORDER BY numero) AS housenumbers
 FROM   numeros_export ne
-JOIN   cog_pyramide_admin AS cog
+JOIN   (SELECT
+            *,
+            CASE
+                WHEN typecom = 'ARM' THEN ARRAY[regexp_replace(nom_com, E'(.+) [^ ]+ Arrondissement', '\1'), nom_com]
+                ELSE ARRAY[nom_com]
+            END AS city
+        FROM cog_pyramide_admin) AS cog
 USING  (code_insee)
 JOIN   (SELECT fantoir,
                lon,
@@ -137,7 +143,7 @@ AS
        code_postal AS postcode,
        ROUND(pn.lat::numeric,6)::float AS lat,
        ROUND(pn.lon::numeric,6)::float AS lon,
-       nom_com AS city,
+       city AS city,
        nom_dep AS departement,
        nom_reg AS region,
        CASE
@@ -150,7 +156,13 @@ AS
 FROM   set_fantoir
 JOIN   bano_points_nommes AS pn
 USING  (fantoir)
-JOIN   cog_pyramide_admin AS cog
+JOIN   (SELECT
+            *,
+            CASE
+                WHEN typecom = 'ARM' THEN ARRAY[regexp_replace(nom_com, E'(.+) [^ ]+ Arrondissement', '\1'), nom_com]
+                ELSE ARRAY[nom_com]
+            END AS city
+        FROM cog_pyramide_admin) AS cog
 USING  (code_insee)
 JOIN   infos_communes c
 USING  (code_insee)

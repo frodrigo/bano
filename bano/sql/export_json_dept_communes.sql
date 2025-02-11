@@ -4,7 +4,11 @@ SELECT DISTINCT code_insee          AS id,
                 cp.cps              AS postcode,
                 round(lat,6)::float AS lat,
                 round(lon,6)::float AS lon,
-                i.name              AS city,
+                CASE
+                    WHEN code_insee IN (SELECT code_insee FROM cog_pyramide_admin WHERE typecom = 'ARM')
+                        THEN ARRAY[regexp_replace(i.name, E'(.+) [^ ]+ Arrondissement', '\1'), i.name]
+                    ELSE ARRAY[i.name]
+                END AS city,
                 cd.libelle          AS departement,
                 cr.libelle          AS region,
                 population,

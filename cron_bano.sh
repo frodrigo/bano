@@ -11,7 +11,7 @@ source config
 bano="python -m bano"
 
 # Sources
-cat deplist.txt | parallel --halt now,fail=1 -j $PARALLEL_JOBS export LANG=$LANG\; $bano charge_ban --forceload {1}
+cat deplist.txt | parallel --retries 3 --halt now,fail=1 -j $PARALLEL_JOBS export LANG=$LANG\; $bano charge_ban --forceload {1}
 cat deplist.txt | parallel --halt now,fail=1 -j $PARALLEL_JOBS export LANG=$LANG\; $bano charge_ld_cadastre --forceload {1}
 $bano menage_noms_ban
 $bano update_bis_table

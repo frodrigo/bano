@@ -2,6 +2,7 @@ WITH
 lignes_brutes
 AS
 (SELECT l.way,
+        l.name AS main_name,
         name_osm.name,
         name_osm.name_tag,
         COALESCE(a9.code_insee,'xxxxx') as insee_jointure,
@@ -24,6 +25,7 @@ WHERE   (l.highway != '' OR
         l.name != ''
 UNION ALL
 SELECT  ST_PointOnSurface(l.way),
+        l.name AS main_name,
         name_osm.name,
         name_osm.name_tag,
         COALESCE(a9.code_insee,'xxxxx') as insee_jointure,
@@ -44,7 +46,8 @@ WHERE   (l.highway||"ref:FR:FANTOIR" != '' OR l.landuse = 'residential' OR l.ame
         l.highway NOT IN ('bus_stop','platform') AND
         l.name != ''
 UNION ALL
-SELECT l.way,
+SELECT  l.way,
+        l.name AS main_name,
         name_osm.name,
         name_osm.name_tag,
         COALESCE(a9.code_insee,'xxxxx') as insee_jointure,
@@ -82,6 +85,7 @@ FROM    lignes_noms),
 lignes_agregees
 AS
 (SELECT ST_LineMerge(ST_Collect(way_line)) way,
+        main_name,
         name,
         name_tag,
         insee_ac,
@@ -90,10 +94,11 @@ AS
         nom_ac
 FROM    lignes_noms_rang
 WHERE   rang = 1
-GROUP BY 2,3,4,5,6,7),
+GROUP BY 2,3,4,5,6,7,8),
 centroide_lignes_agregees
 AS
 (SELECT ST_Centroid(ST_LineMerge(ST_Collect(way_line))) way,
+        main_name,
         name,
         name_tag,
         insee_ac,
@@ -102,10 +107,11 @@ AS
         nom_ac
 FROM    lignes_noms_rang
 WHERE   rang = 1
-GROUP BY 2,3,4,5,6,7),
+GROUP BY 2,3,4,5,6,7,8),
 resultat
 AS
 (SELECT ST_SetSRID(ST_ClosestPoint(lignes_agregees.way,centroide_lignes_agregees.way),4326) point,
+        lignes_agregees.main_name,
         lignes_agregees.name,
         lignes_agregees.name_tag,
         lignes_agregees.insee_ac,
@@ -113,7 +119,7 @@ AS
         lignes_agregees.nom_ac
 FROM    lignes_agregees
 JOIN    centroide_lignes_agregees
-USING   (name,insee_jointure)),
+USING   (name,name_tag,insee_jointure)),
 complement
 AS
 (SELECT c.*,
@@ -148,6 +154,7 @@ LEFT OUTER JOIN (SELECT * FROM polygones_insee_a9 WHERE insee_a8 = '__code_insee
 ON      ST_Intersects(c.point, a9.geometrie))
 SELECT  ST_x(point),
         ST_y(point),
+        main_name,
         name,
         name_tag,
         insee_ac,
@@ -157,6 +164,7 @@ FROM    resultat
 UNION ALL
 SELECT  ST_x(point),
         ST_y(point),
+        name,
         name,
         'name' AS name_tag,
         insee_ac,

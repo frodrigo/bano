@@ -14,6 +14,7 @@ from .sql import sql_get_data, sql_process
 class Nom:
     def __init__(
         self,
+        nom_principal,
         nom,
         nom_tag,
         fantoir,
@@ -38,6 +39,7 @@ class Nom:
             if self.code_insee_ancienne_commune
             else "RACINE"
         )
+        self.nom_principal = f"{self.niveau}{hp.normalize(nom_principal)}"
 
     def __eq__(self, other):
         return (
@@ -103,12 +105,13 @@ class Noms:
                 dict(code_insee=self.code_insee),
             )
         )
+
         for (
             provenance,
+            nom_principal,
             name,
             name_tag,
             tags,
-            libelle_suffixe,
             code_insee_ancienne_commune,
             nom_ancienne_commune,
             nature,
@@ -116,6 +119,7 @@ class Noms:
             if provenance in (1, 2, 3, 4, 5):
                 self.add_nom(
                     Nom(
+                        nom_principal,
                         name,
                         name_tag,
                         tags.get("ref:FR:FANTOIR"),
@@ -129,6 +133,7 @@ class Noms:
             if provenance in (6, 7) and tags.get("ref:FR:FANTOIR"):
                 self.add_nom(
                     Nom(
+                        nom_principal,
                         name,
                         name_tag,
                         tags["ref:FR:FANTOIR"],
@@ -183,6 +188,29 @@ class Noms:
         for t in osm_candidats:
             if f"{t.code_insee_ancienne_commune}{t.nom_normalise}" in fantoir_ban:
                 t.fantoir = fantoir_ban[f"{t.code_insee_ancienne_commune}{t.nom_normalise}"]
+
+    def lien_fantoir_entre_noms(self,points_nommes):
+        fantoirs_par_nom_principal = {}
+        fantoir_prefere = {}
+        for t in self.triplets_nom_fantoir_source:
+            if t.source != 'OSM' :
+                continue
+            if t.fantoir and t.nom_tag:
+                if not t.nom_principal in fantoirs_par_nom_principal:
+                    fantoirs_par_nom_principal[t.nom_principal]={}
+                fantoirs_par_nom_principal[t.nom_principal][t.nom_tag] = t.fantoir
+
+        for k,v in fantoirs_par_nom_principal.items():
+            if 'name' in v:
+                fantoir_prefere[k] = v['name']
+
+        for t in self.triplets_nom_fantoir_source:
+            if t.source == 'OSM' and not t.fantoir:
+                t.fantoir = fantoir_prefere.get(t.nom_principal)
+        for p in points_nommes:
+            if p.source == 'OSM' and not p.fantoir:
+                p.fantoir = fantoir_prefere.get(p.nom_principal)
+
 
     def enregistre(self, correspondance):
         sql_process(
@@ -467,7 +495,8 @@ class Adresses:
                 noms.add_nom(
                     Nom(
                         a.voie,
-                        None,
+                        a.voie,
+                        'name',
                         a.fantoir,
                         "voie",
                         a.source,
@@ -480,7 +509,8 @@ class Adresses:
                 noms.add_nom(
                     Nom(
                         a.place,
-                        None,
+                        a.place,
+                        'name',
                         a.fantoir,
                         "place",
                         a.source,
@@ -562,6 +592,7 @@ class Point_nomme:
         nature,
         lon,
         lat,
+        nom_principal,
         nom,
         nom_tag,
         fantoir=None,
@@ -580,6 +611,12 @@ class Point_nomme:
         self.fantoir = fantoir[0:9] if fantoir else None
         self.code_insee_ancienne_commune = code_insee_ancienne_commune
         self.nom_ancienne_commune = nom_ancienne_commune
+        self.niveau = (
+            self.code_insee_ancienne_commune
+            if self.code_insee_ancienne_commune
+            else "RACINE"
+        )
+        self.nom_principal = f"{self.niveau}{hp.normalize(nom_principal)}"
 
     def __hash__(self):
         return hash(
@@ -636,6 +673,7 @@ class Points_nommes:
                     x,
                     y,
                     hp.format_toponyme(nom),
+                    hp.format_toponyme(nom),
                     None,
                     code_insee_ancienne_commune=code_insee_ancienne_commune,
                     nom_ancienne_commune=nom_ancienne_commune,
@@ -650,6 +688,7 @@ class Points_nommes:
         for (
             x,
             y,
+            nom_principal,
             nom,
             nom_tag,
             code_insee_ancienne_commune,
@@ -657,8 +696,6 @@ class Points_nommes:
             nom_ancienne_commune,
         ) in data:
             for single_fantoir in fantoir.split(';'):
-                # if ';' in fantoir:
-                #     print(fantoir, single_fantoir,nom)
                 if single_fantoir and single_fantoir[0:5] != self.code_insee:
                     continue
                 self.add_point_nomme(
@@ -668,6 +705,7 @@ class Points_nommes:
                         "centroide",
                         x,
                         y,
+                        nom_principal,
                         nom,
                         nom_tag,
                         code_insee_ancienne_commune=code_insee_ancienne_commune,
@@ -684,6 +722,7 @@ class Points_nommes:
         for (
             x,
             y,
+            nom_principal,
             nom,
             nom_tag,
             code_insee_ancienne_commune,
@@ -700,6 +739,7 @@ class Points_nommes:
                         "place",
                         x,
                         y,
+                        nom_principal,
                         nom,
                         nom_tag,
                         code_insee_ancienne_commune=code_insee_ancienne_commune,
@@ -729,6 +769,7 @@ class Points_nommes:
                     x,
                     y,
                     nom,
+                    nom,
                     None,
                     code_insee_ancienne_commune=code_insee_ancienne_commune,
                     fantoir=fantoir,
@@ -745,6 +786,7 @@ class Points_nommes:
                 noms.add_nom(
                     Nom(
                         a.nom,
+                        a.nom,
                         None,
                         a.fantoir,
                         a.nature,
@@ -757,6 +799,7 @@ class Points_nommes:
             if a.source == "OSM":
                 noms.add_nom(
                     Nom(
+                        a.nom_principal,
                         a.nom,
                         a.nom_tag,
                         a.fantoir,
@@ -875,9 +918,6 @@ class Correspondance_fantoir_ban_osm:
                     self.correspondance[
                         f"{n} {self.dic_fantoir[n][f]['BAN']}"
                     ] = self.dic_fantoir[n][f]["OSM"]
-
-    def enregistre(self):
-        return 0
 
 
 def remplace_fantoir_ban(correspondance, niveau, fantoir):

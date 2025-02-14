@@ -6,7 +6,8 @@ SELECT  ST_X(geom_centroid),
 FROM    (SELECT *
          FROM   lieux_dits
          WHERE  code_insee = '__code_insee__' AND
-                nom IS NOT NULL) ld
+                nom IS NOT NULL AND
+                nom != '') ld
 LEFT OUTER JOIN suffixe h
 ON      ST_Intersects(ld.geom_centroid, h.geometrie)
 LEFT OUTER JOIN (SELECT * FROM polygones_insee_a9 WHERE insee_a8 = '__code_insee__') a9

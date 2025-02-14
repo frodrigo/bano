@@ -1,7 +1,8 @@
 WITH
 pts
 AS
-(SELECT  pt.way,
+(SELECT pt.way,
+        pt.name AS main_name,
         name_osm.name,
         name_osm.name_tag,
         tags,
@@ -12,7 +13,7 @@ AS
 FROM    (SELECT way FROM planet_osm_polygon WHERE "ref:INSEE" = '__code_insee__')                    p
 JOIN    (SELECT * FROM planet_osm_point WHERE place != '' AND name != '') pt
 ON      pt.way && p.way                 AND
-         ST_Intersects(pt.way, p.way)
+        ST_Intersects(pt.way, p.way)
 LEFT OUTER JOIN (SELECT osm_id FROM planet_osm_communes_statut WHERE "ref:INSEE" = '__code_insee__' AND member_role = 'admin_centre') admin_centre
 ON      pt.osm_id = admin_centre.osm_id
 LEFT OUTER JOIN (SELECT * FROM polygones_insee_a9 WHERE insee_a8 = '__code_insee__') a9
@@ -25,6 +26,7 @@ WHERE   admin_centre.osm_id IS NULL),
 pts_hors_commune
 AS
 (SELECT  pt.way,
+        pt.name AS main_name,
         name_osm.name,
         name_osm.name_tag,
         place,
@@ -43,6 +45,7 @@ UNNEST(
 polys
 AS
 (SELECT  st_centroid(pt.way) AS way,
+        pt.name AS main_name,
         name_osm.name,
         name_osm.name_tag,
         tags,
@@ -67,6 +70,7 @@ fullset
 as
 (SELECT ST_x(way) AS x,
         ST_y(way) AS y,
+        main_name,
         name,
         name_tag,
         insee_ac,
@@ -81,6 +85,7 @@ WHERE   name != ''
 UNION
 SELECT  ST_x(way),
         ST_y(way),
+        main_name,
         name,
         name_tag,
         insee_ac,
@@ -95,6 +100,7 @@ WHERE   name != ''
 UNION
 SELECT ST_x(way) AS x,
         ST_y(way) AS y,
+        main_name,
         name,
         name_tag,
         insee_ac,
@@ -110,6 +116,7 @@ as
 FROM    fullset)
 SELECT  x,
         y,
+        main_name,
         name,
         name_tag,
         insee_ac,

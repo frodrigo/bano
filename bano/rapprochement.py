@@ -32,9 +32,13 @@ def process_unitaire(code_insee,verbose,source_pifometre):
 
         if verbose: print('charge_noms_osm_hors_numeros')
         noms.charge_noms_osm_hors_numeros()
+        if verbose: print('charge_numeros_osm')
         adresses.charge_numeros_osm()
+        if verbose: print('charge_numeros_ban')
         adresses.charge_numeros_ban(topo)
+        if verbose: print('charge_points_nommes_lieux_dits_cadastre')
         points_nommes.charge_points_nommes_lieux_dits_cadastre()
+        if verbose: print('charge_points_nommes_place_osm')
         points_nommes.charge_points_nommes_place_osm()
         # Les centroïdes viennent en dernier (fallback). Tout point déjà affecté comme lieu-dit OSM est inchangé dans l'étape charge_points_nommes_centroides_osm()
         if verbose: print('charge_points_nommes_centroides_osm')
@@ -63,6 +67,9 @@ def process_unitaire(code_insee,verbose,source_pifometre):
 
         if verbose: print('correspondance_fantoir_ban_osm')
         correspondance_fantoir_ban_osm.process(noms)
+
+        # rattachement des noms alt_, old_ et en langues régionales en privilégiant le FANTOIR du tag name
+        noms.lien_fantoir_entre_noms(points_nommes)
 
         if verbose: print('adresses.enregistre')
         adresses.enregistre(correspondance_fantoir_ban_osm.correspondance)

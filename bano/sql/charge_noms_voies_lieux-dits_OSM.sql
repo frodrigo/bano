@@ -1,13 +1,14 @@
 SELECT  DISTINCT provenance,
+        main_name,
         name,
         name_tag,
         tags,
-        libelle_suffixe,
         a9.code_insee,
         a9.nom,
         nature
 FROM    (SELECT  1::integer AS provenance,
                  pt.way,
+                 pt.name AS main_name,
                  name_osm.name,
                  name_osm.name_tag,
                  tags,
@@ -26,6 +27,7 @@ FROM    (SELECT  1::integer AS provenance,
          UNION ALL
          SELECT  2,
                  l.way,
+                 l.name AS main_name,
                  name_osm.name,
                  name_osm.name_tag,
                  tags,
@@ -40,6 +42,7 @@ FROM    (SELECT  1::integer AS provenance,
          UNION ALL
          SELECT  3,
                  pl.way,
+                 pl.name AS main_name,
                  name_osm.name,
                  name_osm.name_tag,
                  tags,
@@ -53,8 +56,6 @@ FROM    (SELECT  1::integer AS provenance,
              ARRAY ['name','alt_name','old_name','name_fr','name_eu','name_br','name_oc','name_de','name_ca','name_gsw','name_co']
          ) AS name_osm(name,name_tag)
 ) l
-LEFT OUTER JOIN suffixe h
-ON      ST_Intersects(l.way, h.geometrie)
 LEFT OUTER JOIN (SELECT * FROM polygones_insee_a9 where insee_a8 = '__code_insee__') a9
 ON      ST_Contains(a9.geometrie,way)
 WHERE   COALESCE(l.name,'') != '';

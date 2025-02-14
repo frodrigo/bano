@@ -674,7 +674,7 @@ class Points_nommes:
                     y,
                     hp.format_toponyme(nom),
                     hp.format_toponyme(nom),
-                    None,
+                    'nom_cadastre',
                     code_insee_ancienne_commune=code_insee_ancienne_commune,
                     nom_ancienne_commune=nom_ancienne_commune,
                 )
@@ -770,7 +770,7 @@ class Points_nommes:
                     y,
                     nom,
                     nom,
-                    None,
+                    'nom_ban',
                     code_insee_ancienne_commune=code_insee_ancienne_commune,
                     fantoir=fantoir,
                     nom_ancienne_commune=nom_ancienne_commune,
@@ -787,7 +787,7 @@ class Points_nommes:
                     Nom(
                         a.nom,
                         a.nom,
-                        None,
+                        'nom_cadastre',
                         a.fantoir,
                         a.nature,
                         a.source,

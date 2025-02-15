@@ -10,6 +10,10 @@ from . import helpers as hp
 
 from .sql import sql_get_data, sql_process
 
+def is_pseudo_fantoir(fantoir):
+    if fantoir[5] == 'b':
+        return True
+    return False
 
 class Nom:
     def __init__(
@@ -203,13 +207,18 @@ class Noms:
         for k,v in fantoirs_par_nom_principal.items():
             if 'name' in v:
                 fantoir_prefere[k] = v['name']
+            if 'name' in v and is_pseudo_fantoir(v['name']):
+                for tag in ['alt_name','old_name']:
+                    if fantoirs_par_nom_principal.get(tag) and not is_pseudo_fantoir(fantoirs_par_nom_principal[tag]):
+                        fantoir_prefere[k] = fantoirs_par_nom_principal[tag]
+                        break
 
         for t in self.triplets_nom_fantoir_source:
-            if t.source == 'OSM' and not t.fantoir:
-                t.fantoir = fantoir_prefere.get(t.nom_principal)
+            if t.source == 'OSM' and (not t.fantoir or is_pseudo_fantoir(t.fantoir)) and t.nom_principal in fantoir_prefere:
+                t.fantoir = fantoir_prefere[t.nom_principal]
         for p in points_nommes:
-            if p.source == 'OSM' and not p.fantoir:
-                p.fantoir = fantoir_prefere.get(p.nom_principal)
+            if p.source == 'OSM' and (not p.fantoir or is_pseudo_fantoir(p.fantoir)) and p.nom_principal in fantoir_prefere:
+                p.fantoir = fantoir_prefere[p.nom_principal]
 
 
     def enregistre(self, correspondance):

@@ -65,11 +65,11 @@ def process_unitaire(code_insee,verbose,source_pifometre):
         if verbose: print('adresses.complete_fantoir')
         adresses.complete_fantoir(noms)
 
-        if verbose: print('correspondance_fantoir_ban_osm')
-        correspondance_fantoir_ban_osm.process(noms)
-
         # rattachement des noms alt_, old_ et en langues régionales en privilégiant le FANTOIR du tag name
         noms.lien_fantoir_entre_noms(points_nommes)
+
+        if verbose: print('correspondance_fantoir_ban_osm')
+        correspondance_fantoir_ban_osm.process(noms)
 
         if verbose: print('adresses.enregistre')
         adresses.enregistre(correspondance_fantoir_ban_osm.correspondance)

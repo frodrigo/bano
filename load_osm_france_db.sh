@@ -9,13 +9,13 @@ PBF_FILE=$(basename "$PBF_URL")
 
 lockfile=${DATA_DIR}/imposm.lock
 
-if test -f ${lockfile}
-then
-  echo `date`" : Process deja en cours"
-  exit 1
-fi
-
-touch ${lockfile}
+# if test -f ${lockfile}
+# then
+#   echo `date`" : Process deja en cours"
+#   exit 1
+# fi
+#
+# touch ${lockfile}
 
 mkdir -p $DOWNLOAD_DIR
 cd $DOWNLOAD_DIR
@@ -49,4 +49,4 @@ imposm import \
 $pgsql_BANO -f sql/finalisation.sql
 
 cp $DOWNLOAD_DIR/last.state.txt $DOWNLOAD_DIR/state.txt
-rm ${lockfile}
+# rm ${lockfile}

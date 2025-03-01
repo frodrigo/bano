@@ -35,7 +35,12 @@ def main():
         "--version", type=str, help="Version de TOPO pour nommage du fichier téléchargé"
     )
     subparser.add_argument(
-        "--forceload", "-f",
+        "--forcedownload", "-fd",
+        action='store_true',
+        help="Forcer le téléchargement"
+    )
+    subparser.add_argument(
+        "--forceload", "-fl",
         action='store_true',
         help="Forcer le re-chargement en base même sans téléchargement"
     )

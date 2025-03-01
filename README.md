@@ -150,7 +150,7 @@ docker compose exec -u postgres postgres psql
 docker compose run --rm tools ./load_osm_france_db.sh https://download.openstreetmap.fr/extracts/merge/france_metro_dom_com_nc.osm.pbf
 
 # Charger les autres données
-docker compose run --rm tools bash -c "source config && python -m bano charge_topo_sas --version topo --forceload"
+docker compose run --rm tools bash -c "source config && python -m bano charge_topo_sas --version topo --forceload # --forcedownload"
 docker compose run --rm tools bash -c "source config && python -m bano publish_topo"
 docker compose run --rm tools bash -c "source config && python -m bano update_bis_table"
 docker compose run --rm tools bash -c "source config && python -m bano charge_cog --forceload"

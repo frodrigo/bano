@@ -117,10 +117,14 @@ def get_destination(version):
 def publish(**kwargs):
     sql_process('topo_publish',{})
 
-def process(version, forceload, **kwargs):
+def process(version, forcedownload, forceload, **kwargs):
     # sql_process('topo_comparaison',{})
 
-    if dowload(version) or forceload:
+    dowloaded = False
+    if forcedownload:
+        dowloaded = dowload(version)
+
+    if dowloaded or forceload:
         update_table_in_db(version)
 
 # stats TOPO decembre 2023

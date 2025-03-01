@@ -109,7 +109,7 @@ def update_table_in_db(version):
             cur.execute(f"CREATE TABLE IF NOT EXISTS {TABLE_CIBLE} AS SELECT * FROM topo LIMIT 0;")
             cur.execute(f"TRUNCATE {TABLE_CIBLE}")
             cur.copy_from(io_in_csv,f"{TABLE_CIBLE}",sep='$',null='')
-    sql_process('topo_comparaison',{})
+    # sql_process('topo_comparaison',{})
 
 def get_destination(version):
     return Path(os.environ['DATA_DIR']) / f'{version}.csv'

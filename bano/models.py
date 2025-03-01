@@ -536,7 +536,7 @@ class Adresses:
             nom = a.voie_normalisee or a.place_normalisee
             if a.code_insee_ancienne_commune:
                 a.fantoir = noms.fantoir_par_nom_sous_commune.get(
-                    a.code_insee_ancienne_commune
+                    a.code_insee_ancienne_commune, {}
                 ).get(nom)
             else:
                 a.fantoir = noms.fantoir_par_nom_sous_commune.get(nom)

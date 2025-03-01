@@ -66,21 +66,21 @@ def update_table_in_db(version):
             cur.execute(f"CREATE TABLE IF NOT EXISTS {TABLE_CIBLE} AS SELECT * FROM topo LIMIT 0;")
             cur.execute(f"TRUNCATE {TABLE_CIBLE}")
             cur.copy_from(io_in_csv,f"{TABLE_CIBLE}",sep='$',null='')
-    sql_process('topo_comparaison',{})
+    # sql_process('topo_comparaison',{})
 
-    # stats pour le forum (https://forum.openstreetmap.fr/t/la-gazette-de-bano-mises-a-jour-mensuelles-topo/29095)
-    tableau = sql_get_data("topo_tableau_forum",{})
-    changes = 0
-    with open('./tableau_forum.txt','w') as tab:
-        tab.write(f"|Département | Commune | Nombre de nouveautés TOPO | Lien|\n|--- | --- | --- | ---|\n")
-        for index,(dep,com,libelle,count) in enumerate(tableau):
-            if index == len(tableau) - 1:
-                date_max = libelle
-                continue
-            changes += count
-            if count > 9 and index < 100:
-                tab.write(f"|{dep}|{libelle}|{count}|[Pifomètre](https://bano.openstreetmap.fr/pifometre/index.html?insee={com}) [Pifomap](https://bano.openstreetmap.fr/pifometre/pifomap.html?insee={com})\n")
-        tab.write(f"\n{len(tableau)} communes\n{changes} modifications\ndate max {date_max}")
+    # # stats pour le forum (https://forum.openstreetmap.fr/t/la-gazette-de-bano-mises-a-jour-mensuelles-topo/29095)
+    # tableau = sql_get_data("topo_tableau_forum",{})
+    # changes = 0
+    # with open('./tableau_forum.txt','w') as tab:
+    #     tab.write(f"|Département | Commune | Nombre de nouveautés TOPO | Lien|\n|--- | --- | --- | ---|\n")
+    #     for index,(dep,com,libelle,count) in enumerate(tableau):
+    #         if index == len(tableau) - 1:
+    #             date_max = libelle
+    #             continue
+    #         changes += count
+    #         if count > 9 and index < 100:
+    #             tab.write(f"|{dep}|{libelle}|{count}|[Pifomètre](https://bano.openstreetmap.fr/pifometre/index.html?insee={com}) [Pifomap](https://bano.openstreetmap.fr/pifometre/pifomap.html?insee={com})\n")
+    #     tab.write(f"\n{len(tableau)} communes\n{changes} modifications\ndate max {date_max}")
 
 def get_destination(version):
     return Path(os.environ['DATA_DIR']) / f'{version}.csv'

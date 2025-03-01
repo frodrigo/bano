@@ -45,4 +45,5 @@ echo
 echo "== Elements par types et départements, les plus grosses différences =="
 echo
 jq -cs 'map(map({key: (.id + .type), value: .}) | from_entries) | .[0] * .[1] | map(.) | .[] | select(.length_old and .length_new and .length_old != .length_new) | (. += { length_diff: (.length_new - .length_old), length_change: ((.length_new - .length_old) / .length_old) }) | select(.length_diff > 2)' /tmp/count-type-old.json /tmp/count-type-new.json | jq -cs 'sort_by(.length_change) | .[]' > /tmp/count-type-diff.json
+head -n 20 /tmp/count-type-diff.json
 tail -n 20 /tmp/count-type-diff.json

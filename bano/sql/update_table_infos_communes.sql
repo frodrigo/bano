@@ -5,11 +5,11 @@ statut
 AS
 (SELECT com code_insee, 1 AS statut FROM cog_commune
 UNION ALL
-SELECT burcentral, 2 AS statut FROM cog_canton 
+SELECT burcentral, 2 AS statut FROM cog_canton
 UNION ALL
-SELECT cheflieu, 3 AS statut FROM cog_arrondissement  
+SELECT cheflieu, 3 AS statut FROM cog_arrondissement
 UNION ALL
-SELECT cheflieu, 4 AS statut FROM cog_departement 
+SELECT cheflieu, 4 AS statut FROM cog_departement
 UNION ALL
 SELECT cheflieu, 5 AS statut FROM cog_region),
 adm_weight
@@ -42,22 +42,24 @@ SELECT cc.dep,
        adm_weight.adm_weight,
        pop.population,
        ROUND((pop.population::numeric/1000),1) AS population_milliers,
-       CASE 
+       CASE
          WHEN pop.population < 1000 THEN 'village'
          WHEN pop.population < 10000 THEN 'town'
          ELSE 'city'
        END AS type,
-       pp.lon,
-       pp.lat,
-       pp.geometrie
+       coalesce(pp.lon, ST_Y(ST_PointOnSurface(polygones_insee.geometrie))) AS lon,
+       coalesce(pp.lat, St_Y(ST_PointOnSurface(polygones_insee.geometrie))) AS lat,
+       coalesce(pp.geometrie, ST_PointOnSurface(polygones_insee.geometrie)) AS geometrie
 FROM adm_weight
 JOIN cog_commune cc
 ON cc.com = code_insee
 LEFT OUTER JOIN pop
 USING (code_insee)
-JOIN  pp
+LEFT OUTER JOIN  pp
 USING (osm_id)
-WHERE pop.rang = 1 AND
+LEFT JOIN polygones_insee ON
+      polygones_insee.code_insee = adm_weight.code_insee
+WHERE (pop.rang IS NULL OR pop.rang = 1) AND
       cc.typecom != 'COMD';
 
 TRUNCATE TABLE infos_communes;

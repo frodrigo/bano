@@ -35,9 +35,7 @@ cat deplist.txt        | parallel --halt now,fail=1 -j $PARALLEL_JOBS export LAN
 echo 'rapprochement ok'
 
 # ménage PostgreSQL
-$pgsql_BANO -c "VACUUM bano_adresses;"
-$pgsql_BANO -c "VACUUM bano_points_nommes;"
-$pgsql_BANO -c "VACUUM nom_fantoir;"
+$pgsql_BANO -c "VACUUM FULL;"
 
 echo 'preparation export'
 $bano prepare_export

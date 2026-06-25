@@ -149,6 +149,10 @@ docker compose exec -u postgres postgres psql
 # Charger les données OSM
 docker compose run --rm tools ./load_osm_france_db.sh https://download.openstreetmap.fr/extracts/merge/france_metro_dom_com_nc.osm.pbf
 
+# Optionnel
+docker compose run --rm tools bash -c "rm -fr /data/bano_imposm_cache"
+docker compose run --rm tools bash -c "rm /data/download/france_metro_dom_com_nc.osm.pbf"
+
 # Charger les autres données
 docker compose run --rm tools bash -c "source config && python -m bano charge_topo_sas --version topo --forceload"
 docker compose run --rm tools bash -c "source config && python -m bano publish_topo --full"
@@ -156,6 +160,12 @@ docker compose run --rm tools bash -c "source config && python -m bano update_bi
 docker compose run --rm tools bash -c "source config && python -m bano charge_cog --forceload"
 docker compose run --rm tools bash -c "source config && python -m bano charge_cp --forceload"
 docker compose run --rm tools bash -c "source config && python -m bano charge_bdtopo --forceload"
+
+# Optionnel
+docker compose run --rm tools bash -c "rm -fr /data/download/voie_nommee.gpkg /data/project/bano_data/cadastre_cache /data/project/bano_data/ban_cache /data/project/bano_data/ban_cache /data/project/bano_data/topo.csv"
+docker compose exec -u postgres postgres psql -c "DROP TABLE topo_stage;"
+docker compose exec -u postgres postgres psql -c "VACUUM FULL planet_osm_rels, planet_osm_polygon, planet_osm_point, planet_osm_line, lieux_dits, bdtopo_voie_nommee, bdtopo_voie_nommee_utile, bano_points_nommes, bano_adresses, ban;"
+
 
 ### Mise à jour
 docker compose run --rm tools bash -c "source config && ./cron_osm.sh"

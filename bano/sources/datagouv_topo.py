@@ -96,6 +96,10 @@ def publish(diff,full,**kwargs):
         sql_process('topo_publish_full',{})
 
 
-def process(version, forceload, **kwargs):
-    if forceload or dowload(version):
+def process(version, forcedownload, forceload, **kwargs):
+    dowloaded = False
+    if forcedownload:
+        dowloaded = dowload(version)
+
+    if dowloaded or forceload:
         update_table_in_db(version)

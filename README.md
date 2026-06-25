@@ -154,7 +154,7 @@ docker compose run --rm tools bash -c "rm -fr /data/bano_imposm_cache"
 docker compose run --rm tools bash -c "rm /data/download/france_metro_dom_com_nc.osm.pbf"
 
 # Charger les autres données
-docker compose run --rm tools bash -c "source config && python -m bano charge_topo_sas --version topo --forceload"
+docker compose run --rm tools bash -c "source config && python -m bano charge_topo_sas --version topo --forceload --forcedownload"
 docker compose run --rm tools bash -c "source config && python -m bano publish_topo --full"
 docker compose run --rm tools bash -c "source config && python -m bano update_bis_table"
 docker compose run --rm tools bash -c "source config && python -m bano charge_cog --forceload"

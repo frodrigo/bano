@@ -15,6 +15,9 @@ def is_pseudo_fantoir(fantoir):
         return True
     return False
 
+def to_csv(data):
+    return "\t".join(map(lambda i: str(i).replace("\t", " ").replace("\r", " ").replace("\n", " ") if i else '', data))
+
 class Nom:
     def __init__(
         self,
@@ -74,7 +77,18 @@ class Nom:
             fantoir = remplace_fantoir(correspondance, self.niveau, self.fantoir)
         else:
             fantoir = self.fantoir
-        return f"{fantoir if fantoir else ''}\t{self.nom}\t{self.nom_tag if self.nom_tag else ''}\t{self.nom_brut}\t{self.nature}\t{self.code_insee}\t{self.code_dept}\t{self.code_insee_ancienne_commune if self.code_insee_ancienne_commune else ''}\t{self.nom_ancienne_commune if self.nom_ancienne_commune else ''}\t{self.source}"
+        return to_csv([
+            fantoir,
+            self.nom,
+            self.nom_tag,
+            self.nom_brut,
+            self.nature,
+            self.code_insee,
+            self.code_dept,
+            self.code_insee_ancienne_commune,
+            self.nom_ancienne_commune,
+            self.source,
+        ])
 
     def add_fantoir(self, topo):
         if not self.fantoir:
@@ -333,7 +347,22 @@ class Adresse:
             fantoir = remplace_fantoir(correspondance, self.niveau, self.fantoir)
         else:
             fantoir = self.fantoir
-        return f"{fantoir if fantoir else ''}\t{self.x}\t{self.y}\t{self.numero}\t{self.voie if self.voie else ''}\t{self.place if self.place else ''}\t{self.code_postal}\t{self.code_insee}\t{self.code_dept}\t{self.code_insee_ancienne_commune if self.code_insee_ancienne_commune else ''}\t{self.nom_ancienne_commune if self.nom_ancienne_commune else ''}\t{self.source}\t{self.id_ban if self.id_ban else ''}\t{self.certification_commune if isinstance(self.certification_commune, int) else ''}"
+        return to_csv([
+            fantoir,
+            self.x,
+            self.y,
+            self.numero,
+            self.voie,
+            self.place,
+            self.code_postal,
+            self.code_insee,
+            self.code_dept,
+            self.code_insee_ancienne_commune,
+            self.nom_ancienne_commune,
+            self.source,
+            self.id_ban,
+            self.certification_commune if isinstance(self.certification_commune, int) else '',
+        ])
 
     def _as_string(self):
         return f"source : {self.source}, numero : {self.numero}, voie : {self.voie} ({self.voie_normalisee}), place : {self.place}, fantoir : {self.fantoir}, code_postal:{self.code_postal}, sous_commune : {self.code_insee_ancienne_commune} - {self.nom_ancienne_commune}"
@@ -600,7 +629,7 @@ class Adresses:
         io_in_csv = io.StringIO()
 
         for a in self.voies_en_schema_point:
-            io_in_csv.write(f"{self.code_insee}\t{a}\n")
+            io_in_csv.write(to_csv([self.code_insee, a]) + "\n")
         io_in_csv.seek(0)
         with bano_db.cursor() as cur_insert:
             cur_insert.copy_from(
@@ -695,7 +724,19 @@ class Point_nomme:
         else:
             fantoir = self.fantoir
 
-        return f"{fantoir if fantoir else ''}\t{self.nom}\t{self.nom_tag if self.nom_tag else ''}\t{self.code_insee}\t{self.code_dept}\t{self.nature}\t{self.code_insee_ancienne_commune if self.code_insee_ancienne_commune else ''}\t{self.nom_ancienne_commune if self.nom_ancienne_commune else ''}\t{self.source}\t{self.lon}\t{self.lat}"
+        return to_csv([
+            fantoir,
+            self.nom,
+            self.nom_tag,
+            self.code_insee,
+            self.code_dept,
+            self.nature,
+            self.code_insee_ancienne_commune,
+            self.nom_ancienne_commune,
+            self.source,
+            self.lon,
+            self.lat,
+        ])
 
 
 class Points_nommes:

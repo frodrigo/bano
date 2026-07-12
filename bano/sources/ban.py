@@ -56,6 +56,9 @@ def download(departement):
     if resp.status_code == 304:
         b.batch_stop_log(id_batch, True)
         return False
+    if resp.status_code == 404:
+        b.batch_stop_log(id_batch, True)
+        return False
     print(resp.status_code)
     b.batch_stop_log(id_batch, False)
     return False

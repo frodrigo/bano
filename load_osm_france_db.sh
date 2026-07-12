@@ -46,7 +46,8 @@ imposm import \
   -connection postgis://$PGCON_BANO?prefix=NONE \
   -dbschema-import public
 
-$pgsql_BANO -f sql/finalisation.sql
+$pgsql_BANO -f $BANO_DIR/sql/finalisation.sql
+$pgsql_BANO -f $BANO_DIR/sql/finalisation_osm2pgsql.sql
 
 cp $DOWNLOAD_DIR/last.state.txt $DOWNLOAD_DIR/state.txt
 # rm ${lockfile}

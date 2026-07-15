@@ -11,7 +11,7 @@ from . import helpers as hp
 from .sql import sql_get_data, sql_process
 
 def is_pseudo_fantoir(fantoir):
-    if fantoir[5] == 'b':
+    if len(fantoir) > 5 and fantoir[5] == 'b':
         return True
     return False
 

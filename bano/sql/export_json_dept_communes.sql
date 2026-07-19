@@ -28,4 +28,5 @@ LEFT JOIN cog_commune AS a ON
 LEFT JOIN cog_commune AS pa ON
     pa.com = a.comparent
 WHERE    i.dep = '__dept__'
+AND lat IS NOT NULL AND lon IS NOT NULL
 ORDER BY i.code_insee;

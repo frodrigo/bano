@@ -184,6 +184,7 @@ LEFT JOIN cog_commune AS a ON
 LEFT JOIN cog_commune AS pa ON
     pa.com = a.comparent AND
     pa.dep = c.dep
+WHERE ne.lon IS NOT NULL AND ne.lat IS NOT NULL -- TEMP je n'ai pas trouvé la source des NULL
 GROUP BY 1,2,3,4,5,6,7,8,9,10,11,12
 ;
 
@@ -240,6 +241,7 @@ LEFT JOIN cog_commune AS a ON
     cog.code_insee = a.com
 LEFT JOIN cog_commune AS pa ON
     pa.com = a.comparent
+WHERE pn.lon IS NOT NULL AND pn.lat IS NOT NULL -- TEMP je n'ai pas trouvé la source des NULL
 )
 SELECT *
 FROM resultats_multi_cp

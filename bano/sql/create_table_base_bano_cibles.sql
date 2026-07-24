@@ -147,16 +147,16 @@ CREATE TABLE IF NOT EXISTS bano_stats_departementales_cumul(
     maj timestamp);
 
 CREATE TABLE IF NOT EXISTS infos_communes (
-    dep character varying(3),
-    code_insee character(5),
-    name text,
-    adm_weight integer,
-    population integer,
-    population_milliers numeric,
-    type text,
-    lon numeric,
-    lat numeric,
-    geometrie geometry(Point, 4326));
+    dep character varying(3) NOT NULL,
+    code_insee character(5) NOT NULL PRIMARY KEY,
+    name text NOT NULL,
+    adm_weight integer NOT NULL,
+    population integer NOT NULL,
+    population_milliers numeric NOT NULL,
+    type text NOT NULL,
+    lon numeric NOT NULL,
+    lat numeric NOT NULL,
+    geometrie geometry(Point, 4326)) NOT NULL;
 
 CREATE INDEX IF NOT EXISTS idx_infos_communes_insee ON infos_communes(code_insee);
 CREATE INDEX IF NOT EXISTS gidx_infos_communes ON infos_communes USING GIST(geometrie);
